@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/controllers/ApisFunctions.dart';
+import 'package:pc_app/Apis/ApisFunctions.dart';
 import 'package:pc_app/controllers/EventsController.dart';
 import 'package:pc_app/models/QuestionModel.dart' as q;
 import 'package:pc_app/screens/score/score_screen.dart';

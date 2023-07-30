@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:pc_app/Client/ClientDetails.dart';
+import 'package:pc_app/screens/serverside/dashboard.dart';
 
 class Client extends GetxController {
   Rx<TextEditingController> ipController = TextEditingController().obs;
@@ -16,21 +18,33 @@ class Client extends GetxController {
       clientProvider = clientProvidr;
       clientProvidr.socket = await Socket.connect(ipAddress, port);
       print('Connected to the server.');
-      Get.back();
+      if (nameController.value.text.toLowerCase().startsWith('admi')) {
+        Get.to(const DashBoardScreen());
+      } else {
+        Get.back();
+        EasyLoading.show(
+            dismissOnTap: false, status: 'Waiting for others to connect...');
+      }
+      sendMessage(nameController.value.text.trim());
+
       // Start listening for messages from the server
       clientProvidr.socket!.listen(
-        (List<int> data) {
+        (data) {
           String message = String.fromCharCodes(data).trim();
           print('Received from server: $message');
           clientProvidr.addMessage(message);
+          EasyLoading.showToast(message);
         },
         onError: (error) {
           print('Error: $error');
           clientProvidr.socket?.destroy();
+          clientProvider.notifyListeners();
         },
         onDone: () {
           print('Disconnected from the server.');
           clientProvidr.socket?.destroy();
+
+          clientProvider.notifyListeners();
         },
       );
     } catch (e) {

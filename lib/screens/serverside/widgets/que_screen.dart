@@ -51,7 +51,7 @@ class _ServerQuizScreenState extends State<ServerQuizScreen> {
 
             Navigator.pushReplacement(context, MaterialPageRoute(
               builder: (context) {
-                return const DashBoard();
+                return const DashBoardScreen();
               },
             ));
           },

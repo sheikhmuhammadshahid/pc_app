@@ -67,7 +67,7 @@ class EventCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      restaurant.dates,
+                      restaurant.date,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.w700,
@@ -104,7 +104,7 @@ class EventCard extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              if (restaurant.status == 'created')
+              if (restaurant.Tteams == 0)
                 ElevatedButton(
                     onPressed: () {
                       Get.to(AddMembersScreen(event: restaurant));

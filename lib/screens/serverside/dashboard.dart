@@ -6,14 +6,14 @@ import 'package:pc_app/controllers/EventsController.dart';
 import 'package:pc_app/screens/serverside/widgets/eventcard.dart';
 import 'package:pc_app/screens/serverside/widgets/eventlist.dart';
 
-class DashBoard extends StatefulWidget {
-  const DashBoard({super.key});
+class DashBoardScreen extends StatefulWidget {
+  const DashBoardScreen({super.key});
 
   @override
-  State<DashBoard> createState() => _DashBoardState();
+  State<DashBoardScreen> createState() => _DashBoardScreenState();
 }
 
-class _DashBoardState extends State<DashBoard> {
+class _DashBoardScreenState extends State<DashBoardScreen> {
   var controller;
   @override
   void initState() {
@@ -27,7 +27,7 @@ class _DashBoardState extends State<DashBoard> {
   }
 
   getEvents() async {
-    // await controller.getEventsList();
+    await controller.getEventsList();
     //serverController.startListening();
   }
 

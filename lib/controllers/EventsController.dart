@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:pc_app/controllers/ApisFunctions.dart';
+import 'package:pc_app/Apis/ApisFunctions.dart';
 import 'package:pc_app/models/Event.dart';
 
 class EventController extends GetxController

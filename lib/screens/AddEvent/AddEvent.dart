@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pc_app/constants.dart';
 
-import '../../Controllers/ApisFunctions.dart';
+import '../../Apis/ApisFunctions.dart';
 import '../../models/Event.dart';
 //import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 
@@ -179,17 +179,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             ),
                             InkWell(
                               onTap: () async {
-                                // dateTime = await showRoundedDatePicker(
-                                //   description: 'Event date',
-                                //   context: context,
-                                //   initialDate: dateTime,
-                                //   borderRadius: 16,
-                                // );
+                                dateTime = await showDatePicker(
+                                  context: context,
+                                  initialDate: dateTime ?? DateTime.now(),
+                                  firstDate: DateTime(
+                                      2000), // Set the first date that can be selected
+                                  lastDate: DateTime(
+                                      2101), // Set the last date that can be selected
+                                );
 
-                                // setState(() {
-                                //   dateTimeController.text =
-                                //       dateTime.toString().split(' ')[0];
-                                // });
+                                setState(() {
+                                  dateTimeController.text =
+                                      dateTime.toString().split(' ')[0];
+                                });
                               },
                               child: Container(
                                 height: 50,
@@ -233,7 +235,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         if (_formKey.currentState!.validate()) {
                           eventss e = eventss(
                               id: 0,
-                              dates: dateTime.toString().split(' ')[0],
+                              date: dateTime.toString().split(' ')[0],
                               type: eventtype!,
                               status: 'created',
                               Tteams: int.parse(noOfTeams!));

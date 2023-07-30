@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:pc_app/models/TeamModel.dart';
 
-import 'ApisFunctions.dart';
+import '../Apis/ApisFunctions.dart';
 
 class TeamsController extends GetxController
     with GetSingleTickerProviderStateMixin {
