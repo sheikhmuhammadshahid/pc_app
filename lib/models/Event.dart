@@ -32,21 +32,25 @@ class eventss {
   }
 
   Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'date': date,
-      'type': type,
-      'Tteams': Tteams,
-      'status': status,
-    };
+    final result = <String, dynamic>{};
+
+    result.addAll({'id': id});
+    result.addAll({'date': date});
+    result.addAll({'type': type});
+    if (Tteams != null) {
+      result.addAll({'Tteams': Tteams});
+    }
+    result.addAll({'status': status});
+
+    return result;
   }
 
   factory eventss.fromMap(Map<String, dynamic> map) {
     return eventss(
-      id: map['id'] as int,
+      id: int.parse(map['id'] ?? 0),
       date: map['date'] ?? '',
       type: map['type'] ?? '',
-      Tteams: map['Tteams'] != null ? map['Tteams'] as int : null,
+      Tteams: int.parse(map['Tteams'] ?? ''),
       status: map['status'] ?? '',
     );
   }
@@ -54,7 +58,7 @@ class eventss {
   String toJson() => json.encode(toMap());
 
   factory eventss.fromJson(String source) =>
-      eventss.fromMap(json.decode(source) as Map<String, dynamic>);
+      eventss.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -62,10 +66,11 @@ class eventss {
   }
 
   @override
-  bool operator ==(covariant eventss other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other.id == id &&
+    return other is eventss &&
+        other.id == id &&
         other.date == date &&
         other.type == type &&
         other.Tteams == Tteams &&

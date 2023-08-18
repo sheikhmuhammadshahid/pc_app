@@ -115,12 +115,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   //   },
                                   // ));
                                 }),
-                                child: Text(
-                                  "Recent",
-                                  style: GoogleFonts.montserrat(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
+                                child: FittedBox(
+                                  child: Text(
+                                    "Recent",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
                                 ),
                               ),
                             ),
@@ -141,12 +143,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                           .withOpacity(.9),
                                 ),
                                 onPressed: (() {}),
-                                child: Text(
-                                  "Today's",
-                                  style: GoogleFonts.montserrat(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
+                                child: FittedBox(
+                                  child: Text(
+                                    "Today's",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
                                 ),
                               ),
                             ),
@@ -173,12 +177,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                   //   },
                                   // ));
                                 }),
-                                child: Text(
-                                  "Pending",
-                                  style: GoogleFonts.montserrat(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                child: FittedBox(
+                                  child: Text(
+                                    "Pending",
+                                    style: GoogleFonts.montserrat(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),

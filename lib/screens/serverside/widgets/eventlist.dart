@@ -5,11 +5,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pc_app/Client/Clients.dart';
 import 'package:pc_app/controllers/EventsController.dart';
 import 'package:pc_app/controllers/question_controller.dart';
-import 'package:pc_app/screens/AddEvent/AddEvent.dart';
 //import 'package:pc_app/screens/serverside/Model/Events.dart';
-import 'package:pc_app/screens/serverside/widgets/eventcard.dart';
 import 'package:pc_app/screens/serverside/widgets/que_screen.dart';
 import 'package:pc_app/screens/welcome/Admin/AdminScreen.dart';
+import 'package:shimmer/shimmer.dart';
+import '../../AddEvent/AddEvent.dart';
+import 'eventcard.dart';
 
 class RestaurantList extends StatefulWidget {
   //final List<eventss> restaurantList;
@@ -38,21 +39,22 @@ class _RestaurantListState extends State<RestaurantList> {
     return Padding(
       padding: const EdgeInsets.only(left: 18.0),
       child: Obx(() => controller.isLoading.value
-          ? const CircularProgressIndicator()
-          // : GridView.builder(
-          //     itemCount: controller.eventssList.length + 1,
-          //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //         crossAxisCount: 3,
-          //         childAspectRatio: 1 / 0.8,
-          //         mainAxisSpacing: 20,
-          //         crossAxisSpacing: 0),
-          //     itemBuilder: (context, index) {
-          //       return null;
-          //     },
-          //   ),
-          : Wrap(
-              children:
-                  List.generate(controller.eventssList.length + 1, (index) {
+          ? GridView.builder(
+              itemCount: 7,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3, mainAxisSpacing: 20, crossAxisSpacing: 0),
+              itemBuilder: (context, index) {
+                return Shimmer.fromColors(
+                    baseColor: Colors.grey,
+                    highlightColor: Colors.white,
+                    child: const Card());
+              },
+            )
+          : GridView.builder(
+              itemCount: controller.eventssList.length + 1,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  mainAxisSpacing: 10, crossAxisCount: 3),
+              itemBuilder: (context, index) {
                 if (index == 0) {
                   return FittedBox(
                     fit: BoxFit.fill,
@@ -210,7 +212,7 @@ class _RestaurantListState extends State<RestaurantList> {
                     ),
                   ),
                 );
-              }),
+              },
             )),
     );
   }

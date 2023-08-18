@@ -9,7 +9,7 @@ import 'package:pc_app/models/TeamModel.dart';
 
 import '../Client/Clients.dart';
 
-String ip = '192.168.10.16';
+String ip = 'https://compitionapp.cozyreach.com/';
 getQuestionss(eventId) async {
   var controller = Get.find<QuestionController>();
   if (controller.ipAddress == "") {
@@ -18,8 +18,7 @@ getQuestionss(eventId) async {
   List<Question> questions = [];
   try {
     //var contr = Get.find<EventController>();
-    var response = await Dio()
-        .get('http://$ip/PCWebAPis/api/Question/getQuestions?eventId=$eventId');
+    var response = await Dio().get('${ip}getQuestionsApi.php?eventId=$eventId');
     if (response.statusCode == 200) {
       for (var element in response.data) {
         questions.add(Question.fromMap(element));
@@ -37,12 +36,9 @@ getEventsLists() async {
 
   controller = Get.find<QuestionController>();
 
-  if (controller.ipAddress == "") {
-    controller.ipAddress = await Client().getIp();
-  }
   List<eventss> events = [];
   try {
-    var url = 'http://$ip/PCWebAPis/api/Event/getEvents';
+    var url = '${ip}getEventsApi.php';
     var response = await Dio().get(url);
     if (response.statusCode == 200) {
       for (var element in response.data) {
@@ -64,7 +60,7 @@ deleteEvent(eventss e) async {
   }
   try {
     var response = await Dio().get(
-      'http://${controller.ipAddress}/ScoringAppApis/api/event/deleteEvent?event_id=${e.id}',
+      '${ip}deleteEvent.php?event_id=${e.id}',
     );
     if (response.statusCode == 200) {
       Get.snackbar('Event', response.data);
@@ -85,7 +81,7 @@ getTeamsDetails() async {
     var v = Get.find<QuestionController>();
 
     var response = await Dio().get(
-      'http://$ip/PCWebAPis/api/Event/getTeamDetail?eventId=${v.eventId}',
+      '${ip}getEventDetail.php?event_id=${v.eventId}',
     );
     if (response.statusCode == 200) {
       //Get.snackbar('Event', response.data);
@@ -104,11 +100,11 @@ getTeamsDetails() async {
 saveEvent(eventss event) async {
   try {
     EventController eventController = Get.find<EventController>();
-    var controller = Get.find<QuestionController>();
-    var response = await Dio().post('http://$ip/PCWebAPis/api/Event/saveEvent',
+
+    var response = await Dio().post('${ip}AddEventApi.php',
         data: event.toJson(),
         options: Options(headers: {'Content-type': 'application/json'}));
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       Get.back();
       Get.showSnackbar(const GetSnackBar(
         duration: Duration(seconds: 2),
