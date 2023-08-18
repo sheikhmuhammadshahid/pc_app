@@ -9,4 +9,9 @@ class ClientProvider extends ChangeNotifier {
     messages.add(message);
     notifyListeners();
   }
+
+  addSocket(Socket socket) {
+    this.socket = socket;
+    notifyListeners();
+  }
 }

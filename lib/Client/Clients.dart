@@ -16,9 +16,10 @@ class Client extends GetxController {
       String ipAddress = ip;
       const int port = 1234;
       clientProvider = clientProvidr;
-      clientProvidr.socket = await Socket.connect(ipAddress, port);
+      Socket socket = await Socket.connect(ipAddress, port);
       print('Connected to the server.');
-      if (nameController.value.text.toLowerCase().startsWith('admi')) {
+      clientProvider.addSocket(socket);
+      if (nameController.value.text.toLowerCase() == 'admin') {
         Get.to(const DashBoardScreen());
       } else {
         Get.back();

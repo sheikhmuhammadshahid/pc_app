@@ -27,6 +27,7 @@ class RestaurantList extends StatefulWidget {
 class _RestaurantListState extends State<RestaurantList> {
   var controller = Get.find<EventController>();
   var c = Get.find<QuestionController>();
+  Client clientController = Get.find<Client>();
   @override
   void initState() {
     // TODO: implement initState
@@ -228,10 +229,12 @@ class _RestaurantListState extends State<RestaurantList> {
             elevation: 5,
             backgroundColor: const Color.fromARGB(218, 255, 255, 255),
           ),
-          onPressed: (() {
+          onPressed: (() async {
             c.round = text.toLowerCase();
 
             c.eventId = controller.eventssList[index - 1].id;
+            clientController.sendMessage('eventId:${c.eventId}');
+            clientController.sendMessage('round:${c.round}');
             controller.onGoingEvent = controller.eventssList[index - 1];
             Navigator.pushReplacement(context, MaterialPageRoute(
               builder: (context) {

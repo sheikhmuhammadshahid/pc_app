@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:pc_app/constants.dart';
 import 'package:pc_app/models/Event.dart';
 import 'package:pc_app/models/memberModel.dart';
@@ -47,7 +48,7 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                 children: [
                   Container(
                     height: 600,
-                    width: 400,
+                    width: MediaQuery.of(context).size.width * 0.25,
                     color: const Color.fromARGB(255, 240, 227, 202),
                     child: SingleChildScrollView(
                       child: Padding(
@@ -152,18 +153,29 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                                 if (data.isEmpty) {
                                   membersAdded.add(
                                       MemberDetail(teamName.text.trim(), []));
+                                  data = [];
                                   data.add(
                                       MemberDetail(teamName.text.trim(), []));
                                 }
 
-                                if (membersAdded[membersAdded.indexOf(data[0])]
+                                if (membersAdded[membersAdded.indexWhere(
+                                          (element) =>
+                                              element.teamName ==
+                                              data[0].teamName,
+                                        )]
                                             .members
                                             .length <
                                         int.parse(noOfteams ?? '0') ||
-                                    membersAdded[membersAdded.indexOf(data[0])]
+                                    membersAdded[membersAdded.indexWhere(
+                                      (element) =>
+                                          element.teamName == data[0].teamName,
+                                    )]
                                         .members
                                         .isEmpty) {
-                                  membersAdded[membersAdded.indexOf(data[0])]
+                                  membersAdded[membersAdded.indexWhere(
+                                    (element) =>
+                                        element.teamName == data[0].teamName,
+                                  )]
                                       .members
                                       .add(member(
                                           id: 0,
@@ -173,10 +185,9 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                                           semester: semester.text.trim(),
                                           phoneNo: phone.text.trim()));
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                          content: Text(
-                                              'can not add more members in this team')));
+                                  EasyLoading.showToast(
+                                      'can not add more members in this team',
+                                      dismissOnTap: true);
                                 }
                                 setState(() {});
                               },
@@ -194,26 +205,21 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                       ),
                     ),
                   ),
-                  const VerticalDivider(
-                    color: Colors.red,
-                    thickness: 12,
-                    width: 32,
-                  ),
                   SizedBox(
                     height: MediaQuery.of(context).size.height,
 
-                    width: MediaQuery.of(context).size.width * 0.8,
+                    width: MediaQuery.of(context).size.width * 0.75,
                     // color: const Color.fromARGB(255, 116, 95, 31),
                     child: ListView.builder(
                         itemCount: membersAdded.length,
                         shrinkWrap: true,
-                        itemBuilder: (BuildContext context, int index) {
-                          MemberDetail memberDetail = membersAdded[index];
+                        itemBuilder: (BuildContext context, int indx) {
+                          MemberDetail memberDetail = membersAdded[indx];
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
                               height: MediaQuery.of(context).size.height * 0.28,
-                              width: MediaQuery.of(context).size.width * 0.8,
+                              width: MediaQuery.of(context).size.width * 0.75,
                               child: FittedBox(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,31 +242,45 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.2,
-                                            child: ListTile(
-                                              leading: const Icon(
-                                                Icons.list,
-                                                color: Colors.black,
-                                              ),
-                                              trailing: const CircleAvatar(
-                                                radius: 40,
-                                                backgroundColor: Colors.teal,
-                                              ),
-                                              title: Text(
-                                                memberDetail
-                                                    .members[index].name,
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
-                                                ),
-                                              ),
-                                              subtitle: Text(
-                                                '${memberDetail.members[index].name}\n${memberDetail.members[index].aridNo}\n${memberDetail.members[index].phoneNo}',
-                                                style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black,
+                                                0.3,
+                                            child: Card(
+                                              child: Center(
+                                                child: ListTile(
+                                                  leading: const CircleAvatar(
+                                                    radius: 40,
+                                                    backgroundColor:
+                                                        Colors.teal,
+                                                  ),
+                                                  trailing: GestureDetector(
+                                                    onTap: () {
+                                                      membersAdded[indx]
+                                                          .members
+                                                          .remove(memberDetail
+                                                              .members[index]);
+                                                      setState(() {});
+                                                    },
+                                                    child: const Icon(
+                                                      Icons.delete,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  title: Text(
+                                                    memberDetail
+                                                        .members[index].name,
+                                                    style: const TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                  subtitle: Text(
+                                                    '${memberDetail.members[index].aridNo}\n${memberDetail.members[index].phoneNo}',
+                                                    style: const TextStyle(
+                                                      fontSize: 15,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
                                                 ),
                                               ),
                                             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pc_app/Client/ClientDetails.dart';
 import 'package:pc_app/controllers/EventsController.dart';
+import 'package:pc_app/screens/serverside/dashboard.dart';
 
 import 'package:pc_app/screens/welcome/welcome_screen.dart';
 import 'package:clay_containers/clay_containers.dart';
@@ -41,10 +42,9 @@ class _AdminScreenState extends State<AdminScreen> {
             onPressed: () {
               var c = Get.find<QuestionController>();
               c.allQuestions = [];
-
               Navigator.pushReplacement(context, MaterialPageRoute(
                 builder: (context) {
-                  return WelcomeScreen();
+                  return const DashBoardScreen();
                 },
               ));
             },
