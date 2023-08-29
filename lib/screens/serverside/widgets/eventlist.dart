@@ -9,6 +9,7 @@ import 'package:pc_app/controllers/question_controller.dart';
 import 'package:pc_app/screens/serverside/widgets/que_screen.dart';
 import 'package:pc_app/screens/welcome/Admin/AdminScreen.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../../Apis/ApisFunctions.dart';
 import '../../AddEvent/AddEvent.dart';
 import 'eventcard.dart';
 
@@ -184,13 +185,20 @@ class _RestaurantListState extends State<RestaurantList> {
                                           backgroundColor: const Color.fromARGB(
                                               218, 255, 255, 255),
                                         ),
-                                        onPressed: (() {
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          await deleteEvent(controller
+                                              .eventssList[index - 1]);
+                                          controller.eventssList.remove(
+                                              controller
+                                                  .eventssList[index - 1]);
+
                                           // Navigator.push(context, MaterialPageRoute(
                                           //   builder: (context) {
                                           //     return ServerQuizScreen();
                                           //   },
                                           // ));
-                                        }),
+                                        },
                                         child: Text(
                                           "Delete",
                                           style: GoogleFonts.montserrat(

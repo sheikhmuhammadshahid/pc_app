@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:pc_app/controllers/EventsController.dart';
 import 'package:pc_app/controllers/TeamsController.dart';
@@ -63,7 +66,7 @@ deleteEvent(eventss e) async {
       '${ip}deleteEvent.php?event_id=${e.id}',
     );
     if (response.statusCode == 200) {
-      Get.snackbar('Event', response.data);
+      EasyLoading.showToast('Event ${response.data}');
       //return v.m
     }
   } catch (e) {
@@ -72,10 +75,10 @@ deleteEvent(eventss e) async {
 }
 
 getTeamsDetails() async {
-  var controller = Get.find<QuestionController>();
-  if (controller.ipAddress == "") {
-    controller.ipAddress = await Client().getIp();
-  }
+  // var controller = Get.find<QuestionController>();
+  // if (controller.ipAddress == "") {
+  //   controller.ipAddress = await Client().getIp();
+  // }
   var teams = Get.find<TeamsController>();
   try {
     var v = Get.find<QuestionController>();
@@ -106,13 +109,10 @@ saveEvent(eventss event) async {
         options: Options(headers: {'Content-type': 'application/json'}));
     if (response.statusCode == 201) {
       Get.back();
-      Get.showSnackbar(const GetSnackBar(
-        duration: Duration(seconds: 2),
-        message: 'Added successfully',
-        //titleText: Text('Added successfully'),
-      ));
-
-      eventController.eventssList.add(eventss.fromMap(response.data));
+      EasyLoading.showToast('Added successfully', dismissOnTap: true);
+      var data = jsonDecode(response.data);
+      event.id = data['lastInsertedId'];
+      eventController.eventssList.add(event);
 
       print('s');
     } else {

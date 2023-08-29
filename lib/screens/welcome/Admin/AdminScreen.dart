@@ -4,7 +4,6 @@ import 'package:pc_app/Client/ClientDetails.dart';
 import 'package:pc_app/controllers/EventsController.dart';
 import 'package:pc_app/screens/serverside/dashboard.dart';
 
-import 'package:pc_app/screens/welcome/welcome_screen.dart';
 import 'package:clay_containers/clay_containers.dart';
 import 'package:provider/provider.dart';
 
