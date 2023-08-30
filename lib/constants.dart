@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 const kSecondaryColor = Color(0xFF8B94BC);
 const careem = Color.fromARGB(255, 246, 246, 241);
@@ -36,11 +37,19 @@ getTextInputField(controller, hint) {
   // const Spacer(), // 1/6
 }
 
-getTextInputField1(controller, hint) {
+XFile? pickedFile;
+getImagePicker(BuildContext context) async {
+  try {
+    pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+  } catch (e) {}
+}
+
+getTextInputField1(controller, hint, validator) {
   return Container(
     alignment: Alignment.center,
     height: 70,
-    child: TextField(
+    child: TextFormField(
+      validator: validator,
       controller: controller,
       decoration: InputDecoration(
         filled: true,
