@@ -12,11 +12,12 @@ import 'dart:io' show Platform;
 class QuestionController extends GetxController
     with GetTickerProviderStateMixin {
   // Lets animated our progress bar
-
+  RxInt gval = 0.obs;
   AnimationController? animationController;
   Animation? _animation;
   final AudioPlayer _assetsAudioPlayer = AudioPlayer();
   String? round;
+
   // so that we can access our animation outside
   Animation get animation => _animation!;
   String ipAddress = "";

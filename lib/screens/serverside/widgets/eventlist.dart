@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -5,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pc_app/Client/Clients.dart';
 import 'package:pc_app/controllers/EventsController.dart';
 import 'package:pc_app/controllers/question_controller.dart';
+import 'package:pc_app/screens/AddEvent/AddMember.dart';
 //import 'package:pc_app/screens/serverside/Model/Events.dart';
 import 'package:pc_app/screens/serverside/widgets/que_screen.dart';
 import 'package:pc_app/screens/welcome/Admin/AdminScreen.dart';
@@ -31,9 +33,7 @@ class _RestaurantListState extends State<RestaurantList> {
   Client clientController = Get.find<Client>();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // controller.getEventsList();
   }
 
   @override
@@ -70,7 +70,7 @@ class _RestaurantListState extends State<RestaurantList> {
                             .withOpacity(0.3),
                         child: InkWell(
                           onTap: () async {
-                            await showDialog(
+                            await showCupertinoModalPopup(
                               context: context,
                               builder: (BuildContext context) {
                                 return const AddEventScreen();
@@ -93,7 +93,10 @@ class _RestaurantListState extends State<RestaurantList> {
                                     child: AspectRatio(
                                       aspectRatio: 1.8,
                                       child: Image.asset(
-                                        "assets/icons/testing.jpeg",
+                                        "assets/events.jpg",
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                const Icon(Icons.error),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -174,6 +177,39 @@ class _RestaurantListState extends State<RestaurantList> {
                                   getOptionWidget('MCQ', index),
                                   getOptionWidget('Rapid', index),
                                   getOptionWidget('Buzzer', index),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: SizedBox(
+                                      height: 50,
+                                      width: 160,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: const Color.fromARGB(
+                                              218, 255, 255, 255),
+                                        ),
+                                        onPressed: () async {
+                                          Get.back();
+                                          Get.to(AddMembersScreen(
+                                              event: controller
+                                                  .eventssList[index - 1]));
+
+                                          // Navigator.push(context, MaterialPageRoute(
+                                          //   builder: (context) {
+                                          //     return ServerQuizScreen();
+                                          //   },
+                                          // ));
+                                        },
+                                        child: Text(
+                                          "Update",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.all(10),
                                     child: SizedBox(

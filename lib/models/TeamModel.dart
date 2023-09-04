@@ -1,16 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+
+import 'package:pc_app/models/memberModel.dart';
 
 class team extends GetxController {
   int id;
   String teamName;
-  String teamType;
+  String TeamType;
   int? scores;
   int? totalmembers;
   int? buzzerRound;
   int? mcqRound;
+  List<member> members = [];
   int? rapidRound;
   RxString status = 'Pending'.obs;
   Socket? socket;
@@ -18,11 +22,12 @@ class team extends GetxController {
   team({
     required this.id,
     required this.teamName,
-    required this.teamType,
+    required this.TeamType,
     this.scores,
     this.totalmembers,
     this.buzzerRound,
     this.mcqRound,
+    required this.members,
     this.rapidRound,
     this.buzzerWrong,
   });
@@ -30,22 +35,24 @@ class team extends GetxController {
   team copyWith({
     int? id,
     String? teamName,
-    String? teamType,
+    String? TeamType,
     int? scores,
     int? totalmembers,
     int? buzzerRound,
     int? mcqRound,
+    List<member>? members,
     int? rapidRound,
     int? buzzerWrong,
   }) {
     return team(
       id: id ?? this.id,
       teamName: teamName ?? this.teamName,
-      teamType: teamType ?? this.teamType,
+      TeamType: TeamType ?? this.TeamType,
       scores: scores ?? this.scores,
       totalmembers: totalmembers ?? this.totalmembers,
       buzzerRound: buzzerRound ?? this.buzzerRound,
       mcqRound: mcqRound ?? this.mcqRound,
+      members: members ?? this.members,
       rapidRound: rapidRound ?? this.rapidRound,
       buzzerWrong: buzzerWrong ?? this.buzzerWrong,
     );
@@ -56,7 +63,7 @@ class team extends GetxController {
 
     result.addAll({'id': id});
     result.addAll({'teamName': teamName});
-    result.addAll({'teamType': teamType});
+    result.addAll({'TeamType': TeamType});
     if (scores != null) {
       result.addAll({'scores': scores});
     }
@@ -69,6 +76,7 @@ class team extends GetxController {
     if (mcqRound != null) {
       result.addAll({'mcqRound': mcqRound});
     }
+    result.addAll({'members': members.map((x) => x.toMap()).toList()});
     if (rapidRound != null) {
       result.addAll({'rapidRound': rapidRound});
     }
@@ -83,11 +91,14 @@ class team extends GetxController {
     return team(
       id: map['id']?.toInt() ?? 0,
       teamName: map['teamName'] ?? '',
-      teamType: map['teamType'] ?? '',
-      scores: map['scores']?.toInt(),
+      TeamType: map['TeamType'] ?? '',
+      scores: map['scores'] != null && map['scores'] != ''
+          ? map['scores']?.toInt()
+          : 0,
       totalmembers: map['totalmembers']?.toInt(),
       buzzerRound: map['buzzerRound']?.toInt(),
       mcqRound: map['mcqRound']?.toInt(),
+      members: List<member>.from(map['members']?.map((x) => member.fromMap(x))),
       rapidRound: map['rapidRound']?.toInt(),
       buzzerWrong: map['buzzerWrong']?.toInt(),
     );
@@ -99,7 +110,7 @@ class team extends GetxController {
 
   @override
   String toString() {
-    return 'team(id: $id, teamName: $teamName, teamType: $teamType, scores: $scores, totalmembers: $totalmembers, buzzerRound: $buzzerRound, mcqRound: $mcqRound, rapidRound: $rapidRound, buzzerWrong: $buzzerWrong)';
+    return 'team(id: $id, teamName: $teamName, TeamType: $TeamType, scores: $scores, totalmembers: $totalmembers, buzzerRound: $buzzerRound, mcqRound: $mcqRound, members: $members, rapidRound: $rapidRound, buzzerWrong: $buzzerWrong)';
   }
 
   @override
@@ -109,11 +120,12 @@ class team extends GetxController {
     return other is team &&
         other.id == id &&
         other.teamName == teamName &&
-        other.teamType == teamType &&
+        other.TeamType == TeamType &&
         other.scores == scores &&
         other.totalmembers == totalmembers &&
         other.buzzerRound == buzzerRound &&
         other.mcqRound == mcqRound &&
+        listEquals(other.members, members) &&
         other.rapidRound == rapidRound &&
         other.buzzerWrong == buzzerWrong;
   }
@@ -122,11 +134,12 @@ class team extends GetxController {
   int get hashCode {
     return id.hashCode ^
         teamName.hashCode ^
-        teamType.hashCode ^
+        TeamType.hashCode ^
         scores.hashCode ^
         totalmembers.hashCode ^
         buzzerRound.hashCode ^
         mcqRound.hashCode ^
+        members.hashCode ^
         rapidRound.hashCode ^
         buzzerWrong.hashCode;
   }

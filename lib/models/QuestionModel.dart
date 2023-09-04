@@ -66,7 +66,7 @@ class Question {
 
   factory Question.fromMap(Map<String, dynamic> map) {
     return Question(
-      id: map['id']?.toInt() ?? 0,
+      id: int.parse(map['id']),
       ques: map['ques'] ?? '',
       opt1: map['opt1'] ?? '',
       opt2: map['opt2'] ?? '',
@@ -74,7 +74,7 @@ class Question {
       opt4: map['opt4'] ?? '',
       type: map['type'] ?? '',
       answer: map['answer'] ?? '',
-      eventId: map['eventId']?.toInt(),
+      eventId: int.parse(map['eventId']),
     );
   }
 

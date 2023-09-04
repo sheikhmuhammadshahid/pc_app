@@ -22,6 +22,7 @@ getTextInputField(controller, hint) {
     alignment: Alignment.center,
     height: 100,
     child: TextField(
+      //autofillHints: const [AutofillHints.email],
       controller: controller.value,
       decoration: InputDecoration(
         filled: true,
@@ -40,30 +41,28 @@ getTextInputField(controller, hint) {
 XFile? pickedFile;
 getImagePicker(BuildContext context) async {
   try {
-    pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    pickedFile = await ImagePicker()
+        .pickImage(source: ImageSource.gallery, imageQuality: 40);
   } catch (e) {}
 }
 
-getTextInputField1(controller, hint, validator) {
-  return Container(
-    alignment: Alignment.center,
-    height: 70,
-    child: TextFormField(
-      validator: validator,
-      controller: controller,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color.fromARGB(255, 240, 227, 202),
-        hintText: hint,
-        hintStyle: const TextStyle(
-          fontSize: 15,
-          color: Colors.black,
-        ),
-        //focusColor: Colors.black,
-        //focusedBorder: const OutlineInputBorder(),
-        border: const OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
+getTextInputField1(controller, hint, validator, maxLine) {
+  return TextFormField(
+    validator: validator,
+    maxLines: maxLine,
+    controller: controller,
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: const Color.fromARGB(255, 240, 227, 202),
+      hintText: hint,
+      hintStyle: const TextStyle(
+        fontSize: 15,
+        color: Colors.black,
+      ),
+      //focusColor: Colors.black,
+      //focusedBorder: const OutlineInputBorder(),
+      border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
     ),
   );

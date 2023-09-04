@@ -5,6 +5,7 @@ class member {
   String name;
   String image;
   String aridNo;
+  String img;
   String semester;
   String phoneNo;
   member({
@@ -12,6 +13,7 @@ class member {
     required this.name,
     required this.image,
     required this.aridNo,
+    required this.img,
     required this.semester,
     required this.phoneNo,
   });
@@ -21,6 +23,7 @@ class member {
     String? name,
     String? image,
     String? aridNo,
+    String? img,
     String? semester,
     String? phoneNo,
   }) {
@@ -29,6 +32,7 @@ class member {
       name: name ?? this.name,
       image: image ?? this.image,
       aridNo: aridNo ?? this.aridNo,
+      img: img ?? this.img,
       semester: semester ?? this.semester,
       phoneNo: phoneNo ?? this.phoneNo,
     );
@@ -41,6 +45,7 @@ class member {
     result.addAll({'name': name});
     result.addAll({'image': image});
     result.addAll({'aridNo': aridNo});
+    result.addAll({'img': img});
     result.addAll({'semester': semester});
     result.addAll({'phoneNo': phoneNo});
 
@@ -53,6 +58,7 @@ class member {
       name: map['name'] ?? '',
       image: map['image'] ?? '',
       aridNo: map['aridNo'] ?? '',
+      img: map['img'] ?? '',
       semester: map['semester'] ?? '',
       phoneNo: map['phoneNo'] ?? '',
     );
@@ -64,7 +70,7 @@ class member {
 
   @override
   String toString() {
-    return 'member(id: $id, name: $name, image: $image, aridNo: $aridNo, semester: $semester, phoneNo: $phoneNo)';
+    return 'member(id: $id, name: $name, image: $image, aridNo: $aridNo, img: $img, semester: $semester, phoneNo: $phoneNo)';
   }
 
   @override
@@ -76,6 +82,7 @@ class member {
         other.name == name &&
         other.image == image &&
         other.aridNo == aridNo &&
+        other.img == img &&
         other.semester == semester &&
         other.phoneNo == phoneNo;
   }
@@ -86,6 +93,7 @@ class member {
         name.hashCode ^
         image.hashCode ^
         aridNo.hashCode ^
+        img.hashCode ^
         semester.hashCode ^
         phoneNo.hashCode;
   }
