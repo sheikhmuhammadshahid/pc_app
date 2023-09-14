@@ -10,45 +10,60 @@ class Client extends GetxController {
   Rx<TextEditingController> ipController = TextEditingController().obs;
   Rx<TextEditingController> nameController = TextEditingController().obs;
   late ClientProvider clientProvider;
+  connect(ip, port) async {
+    try {
+      Socket socket = await Socket.connect(ip, port);
+      clientProvider.addSocket(socket);
+      return socket;
+    } catch (e) {
+      EasyLoading.show(status: e.toString(), dismissOnTap: true);
+
+      return null;
+    }
+  }
+
   Future<void> connectToServer(String ip, ClientProvider clientProvidr) async {
     try {
       // Set the server's IP address and port number
       String ipAddress = ip;
       const int port = 1234;
       clientProvider = clientProvidr;
-      Socket socket = await Socket.connect(ipAddress, port);
-      print('Connected to the server.');
-      clientProvider.addSocket(socket);
-      if (nameController.value.text.toLowerCase() == 'admin') {
-        Get.to(const DashBoardScreen());
-      } else {
-        Get.back();
-        EasyLoading.show(
-            dismissOnTap: false, status: 'Waiting for others to connect...');
+      if (await connect(ip, port) != null) {
+        print('Connected to the server.');
+
+        if (nameController.value.text.toLowerCase() == 'admin') {
+          Get.to(const DashBoardScreen());
+        } else {
+          Get.back();
+          EasyLoading.show(
+              dismissOnTap: false, status: 'Waiting for others to connect...');
+        }
+        sendMessage(nameController.value.text.trim());
+
+        // Start listening for messages from the server
+        clientProvidr.socket!.listen(
+          (data) {
+            String message = String.fromCharCodes(data).trim();
+            print('Received from server: $message');
+            clientProvidr.addMessage(message);
+            EasyLoading.showToast(message);
+          },
+          onError: (error) {
+            print('Error: $error');
+            clientProvidr.socket?.destroy();
+            clientProvider.notifyListeners();
+          },
+          onDone: () {
+            print('Disconnected from the server.');
+            clientProvidr.socket?.destroy();
+
+            clientProvider.notifyListeners();
+          },
+        );
       }
-      sendMessage(nameController.value.text.trim());
-
-      // Start listening for messages from the server
-      clientProvidr.socket!.listen(
-        (data) {
-          String message = String.fromCharCodes(data).trim();
-          print('Received from server: $message');
-          clientProvidr.addMessage(message);
-          EasyLoading.showToast(message);
-        },
-        onError: (error) {
-          print('Error: $error');
-          clientProvidr.socket?.destroy();
-          clientProvider.notifyListeners();
-        },
-        onDone: () {
-          print('Disconnected from the server.');
-          clientProvidr.socket?.destroy();
-
-          clientProvider.notifyListeners();
-        },
-      );
     } catch (e) {
+      EasyLoading.show(status: e.toString(), dismissOnTap: true);
+
       print('Error: $e');
     }
   }

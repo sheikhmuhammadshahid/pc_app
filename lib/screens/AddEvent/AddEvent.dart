@@ -32,7 +32,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         alignment: Alignment.topCenter,
         child: SizedBox(
           //color: const Color.fromARGB(255, 177, 225, 202),
-          width: context.width * 0.6,
+          width: context.width * 1,
           height: context.height * 0.7,
 
           child: Material(
@@ -62,11 +62,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       height: 20,
                     ),
                     FittedBox(
-                      child: Row(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           SizedBox(
-                            width: 300,
+                            width: 250,
+                            height: 80,
                             child: DropdownButtonFormField(
                               validator: (value) {
                                 if (value == '' || value == null) {
@@ -111,7 +112,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             width: 20,
                           ),
                           SizedBox(
-                            width: 300,
+                            width: 250,
+                            height: 80,
                             child: DropdownButtonFormField(
                               validator: (value) {
                                 if (value == '' || value == null) {
@@ -160,66 +162,74 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     ),
                     FittedBox(
                       child: Container(
-                        height: 50,
-                        width: 600,
+                        height: 80,
+                        width: 350,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: const Color.fromARGB(255, 245, 240, 227),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            const Text(
-                              "Pick Event Date",
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                        child: FittedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Pick Event Date",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
-                            ),
-                            InkWell(
-                              onTap: () async {
-                                dateTime = await showDatePicker(
-                                  context: context,
-                                  initialDate: dateTime ?? DateTime.now(),
-                                  firstDate: DateTime(
-                                      2000), // Set the first date that can be selected
-                                  lastDate: DateTime(
-                                      2101), // Set the last date that can be selected
-                                );
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  onTap: () async {
+                                    dateTime = await showDatePicker(
+                                      context: context,
+                                      initialDate: dateTime ?? DateTime.now(),
+                                      firstDate: DateTime(
+                                          2000), // Set the first date that can be selected
+                                      lastDate: DateTime(
+                                          2101), // Set the last date that can be selected
+                                    );
 
-                                setState(() {
-                                  dateTimeController.text =
-                                      dateTime.toString().split(' ')[0];
-                                });
-                              },
-                              child: Container(
-                                height: 50,
-                                width: 150,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color:
-                                      const Color.fromARGB(255, 240, 227, 202),
-                                ),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: dateTimeController.text == "null"
-                                      ? const Icon(
-                                          Icons.calendar_month_rounded,
-                                          color: Colors.black,
-                                        )
-                                      : Text(
-                                          dateTimeController.text,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
+                                    setState(() {
+                                      dateTimeController.text =
+                                          dateTime.toString().split(' ')[0];
+                                    });
+                                  },
+                                  child: Container(
+                                    height: 50,
+                                    width: 150,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      color: const Color.fromARGB(
+                                          255, 240, 227, 202),
+                                    ),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: dateTimeController.text == "null"
+                                          ? const Icon(
+                                              Icons.calendar_month_rounded,
+                                              color: Colors.black,
+                                            )
+                                          : Text(
+                                              dateTimeController.text,
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -238,7 +248,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                               date: dateTime.toString().split(' ')[0],
                               type: eventtype!,
                               status: 'created',
-                              Tteams: int.parse(noOfTeams!));
+                              Tteams: 0);
                           await saveEvent(e);
                         }
                       },

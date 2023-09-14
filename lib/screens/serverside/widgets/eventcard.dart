@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pc_app/constants.dart';
 import 'package:pc_app/models/Event.dart';
 import 'package:pc_app/screens/AddEvent/AddMember.dart';
 
@@ -19,30 +20,59 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      shadowColor: kSecondaryColor.withOpacity(0.6),
       borderRadius: BorderRadius.circular(
         10.0,
       ),
-      color: backgroundColor.withOpacity(0.2),
+      elevation: 5,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(
           10.0,
         ),
         child: Container(
-          height: 275,
-          width: 220,
-          padding: const EdgeInsets.all(20),
+          height: 250,
+          width: (context.width / 2),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(
+              10.0,
+            ),
+            color: complete,
+          ),
+          //  padding: const EdgeInsets.all(20),
           child: Column(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10.0),
+                borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(10.0),
+                    topRight: Radius.circular(10.0)),
                 child: SizedBox(
-                  width: 300,
+                  //  width: 300,
+                  height: 130,
                   child: AspectRatio(
                     aspectRatio: 1.8,
                     child: Image.network(
                       'https://cdn.pixabay.com/photo/2018/01/12/10/19/fantasy-3077928_1280.jpg',
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Center(
+                        child: Icon(
+                          Icons.error,
+                          size: 35,
+                        ),
+                      ),
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes! /
+                                  loadingProgress.cumulativeBytesLoaded,
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -78,7 +108,7 @@ class EventCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Spacer(),
+              //const Spacer(),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

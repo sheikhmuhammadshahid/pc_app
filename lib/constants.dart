@@ -7,6 +7,8 @@ const kGreenColor = Color(0xFF6AC259);
 const kRedColor = Color(0xFFE92E30);
 const kGrayColor = Color.fromARGB(255, 154, 182, 248);
 const kBlackColor = Color(0xFF101010);
+const pending = Color.fromARGB(132, 81, 225, 187);
+const complete = Color.fromARGB(131, 167, 154, 248);
 const kPrimaryGradient = LinearGradient(
   colors: [
     Color.fromARGB(255, 244, 36, 36),

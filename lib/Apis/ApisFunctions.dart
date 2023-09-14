@@ -108,9 +108,10 @@ getTeamsDetails(int eventId) async {
     var response = await d.Dio().get(
       '${ip}getEventDetail.php?event_id=$eventId',
     );
+    teams.teams.clear();
     if (response.statusCode == 200) {
       //Get.snackbar('Event', response.data);
-      teams.teams.clear();
+
       for (var element in response.data) {
         //return v.m
         teams.teams.add(team.fromMap(element));
