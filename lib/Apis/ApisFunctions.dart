@@ -34,6 +34,7 @@ getQuestionss(eventId) async {
       //return v.m
     }
   } catch (e) {
+    EasyLoading.show(status: e.toString(), dismissOnTap: true);
     print(e);
   }
   return questions;

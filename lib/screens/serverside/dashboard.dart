@@ -35,8 +35,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
         appBar: context.watch<ClientProvider>().socket == null
@@ -127,101 +129,105 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                         ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 5.0, right: 5),
-                            child: SizedBox(
-                              height: 40,
-                              width: 140,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 206, 198, 247)
+                    Center(
+                      child: SizedBox(
+                        width:
+                            size.width <= 600 ? size.width : size.width * 0.35,
+                        child: FittedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 5.0, right: 5),
+                                child: SizedBox(
+                                  height: 40,
+                                  width: 140,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: const Color.fromARGB(
+                                              255, 206, 198, 247)
                                           .withOpacity(.9),
-                                ),
-                                onPressed: (() {
-                                  controller!.appLyFilter(text: 'Recent');
-                                }),
-                                child: FittedBox(
-                                  child: Text(
-                                    "Recent",
-                                    style: GoogleFonts.montserrat(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const CustomDivider(height: 40),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 5.0, right: 5),
-                            child: SizedBox(
-                              height: 40,
-                              width: 140,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 206, 198, 247)
-                                          .withOpacity(.9),
-                                ),
-                                onPressed: (() {
-                                  controller!.appLyFilter(text: 'Today');
-                                }),
-                                child: FittedBox(
-                                  child: Text(
-                                    "Today's",
-                                    style: GoogleFonts.montserrat(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const CustomDivider(height: 40),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 5.0),
-                            child: SizedBox(
-                              height: 40,
-                              width: 140,
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 206, 198, 247)
-                                          .withOpacity(.9),
-                                ),
-                                onPressed: (() {
-                                  Get.find<EventController>()
-                                      .appLyFilter(text: 'Pending');
-                                }),
-                                child: FittedBox(
-                                  child: Text(
-                                    "Pending",
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                    ),
+                                    onPressed: (() {
+                                      controller!.appLyFilter(text: 'Recent');
+                                    }),
+                                    child: FittedBox(
+                                      child: Text(
+                                        "Recent",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
+                              const CustomDivider(height: 40),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 5.0, right: 5),
+                                child: SizedBox(
+                                  height: 40,
+                                  width: 140,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: const Color.fromARGB(
+                                              255, 206, 198, 247)
+                                          .withOpacity(.9),
+                                    ),
+                                    onPressed: (() {
+                                      controller!.appLyFilter(text: 'Today');
+                                    }),
+                                    child: FittedBox(
+                                      child: Text(
+                                        "Today's",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const CustomDivider(height: 40),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5.0),
+                                child: SizedBox(
+                                  height: 40,
+                                  width: 140,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: const Color.fromARGB(
+                                              255, 206, 198, 247)
+                                          .withOpacity(.9),
+                                    ),
+                                    onPressed: (() {
+                                      Get.find<EventController>()
+                                          .appLyFilter(text: 'Pending');
+                                    }),
+                                    child: FittedBox(
+                                      child: Text(
+                                        "Pending",
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
-                        )
-                      ],
+                        ),
+                      ),
                     ),
                   ],
                 ),

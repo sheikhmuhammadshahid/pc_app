@@ -64,10 +64,13 @@ class _RestaurantListState extends State<RestaurantList> {
               },
               child: GridView.builder(
                 itemCount: controller.filteredEvents.value.length + 1,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     mainAxisSpacing: 10,
-                    crossAxisCount: 2,
-                    childAspectRatio: 2 / 2.5),
+                    crossAxisCount:
+                        MediaQuery.of(context).size.width <= 600 ? 2 : 3,
+                    childAspectRatio: MediaQuery.of(context).size.width <= 600
+                        ? 2 / 2.5
+                        : 2 / 1),
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return FittedBox(

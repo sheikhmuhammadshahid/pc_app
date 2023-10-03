@@ -33,9 +33,11 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
 
   getQues() async {
     excelDataList = await getQuestionss(widget.event.id);
-    setState(() {
-      isGettingquestions = false;
-    });
+    setState(
+      () {
+        isGettingquestions = false;
+      },
+    );
   }
 
   bool isGettingquestions = true;

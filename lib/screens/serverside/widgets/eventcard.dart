@@ -31,8 +31,6 @@ class EventCard extends StatelessWidget {
           10.0,
         ),
         child: Container(
-          height: 250,
-          width: (context.width / 2),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(
               10.0,
