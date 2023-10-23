@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/constants.dart';
-import 'package:pc_app/controllers/EventsController.dart';
-import 'package:pc_app/controllers/TeamsController.dart';
-import 'package:pc_app/controllers/question_controller.dart';
+import 'package:provider/provider.dart';
+import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 
+import '../../../constants.dart';
+import '../../../controllers/EventsController.dart';
+import '../../../controllers/TeamsController.dart';
+import '../../../controllers/question_controller.dart';
 import 'progress_bar.dart';
 import 'question_card.dart';
 
@@ -25,18 +27,18 @@ class _BodyState extends State<Body> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getqus();
+    // getqus();
   }
 
   getqus() async {
-    await controller.getQuestions(widget.round);
+    // await controller.getQuestions(widget.round);
 
-    setState(() {
-      isLoading = false;
-    });
+    // setState(() {
+    //   isLoading = false;
+    // });
   }
 
-  bool isLoading = true;
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     // So that we have acccess our controller
@@ -57,9 +59,8 @@ class _BodyState extends State<Body> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: kDefaultPadding),
                     child: ProgressBar(),
                   ),
                   const SizedBox(height: kDefaultPadding),
@@ -69,26 +70,24 @@ class _BodyState extends State<Body> {
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: kDefaultPadding),
-                        child: Obx(
-                          () => Text.rich(
-                            TextSpan(
-                              text:
-                                  "Question ${questionController.questionNumber.value}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium!
-                                  .copyWith(color: kSecondaryColor),
-                              children: [
-                                TextSpan(
-                                  text:
-                                      "/${questionController.questions.length}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineSmall!
-                                      .copyWith(color: kSecondaryColor),
-                                ),
-                              ],
-                            ),
+                        child: Text.rich(
+                          TextSpan(
+                            text:
+                                "Question ${context.watch<ClientProvider>().questionNo}",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium!
+                                .copyWith(color: kSecondaryColor),
+                            children: [
+                              TextSpan(
+                                text:
+                                    "/${context.watch<ClientProvider>().questions.length}sdsd",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall!
+                                    .copyWith(color: kSecondaryColor),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -144,7 +143,10 @@ class _BodyState extends State<Body> {
                         child: Padding(
                             padding: const EdgeInsets.only(right: 8.0),
                             child: GridView.builder(
-                              itemCount: teamsController.teams.length,
+                              itemCount: context
+                                  .watch<ClientProvider>()
+                                  .ongoingTeams
+                                  .length,
                               gridDelegate:
                                   const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 1,
@@ -156,14 +158,19 @@ class _BodyState extends State<Body> {
                                   () {
                                     return GestureDetector(
                                       onTap: () {
-                                        controller.animationController!
+                                        context
+                                            .read<ClientProvider>()
+                                            .animationController!
                                             .repeat();
                                       },
                                       child: CircleAvatar(
                                         backgroundColor:
                                             eventController.teamName.value !=
-                                                    teamsController
-                                                        .teams[index].teamName
+                                                    context
+                                                        .read<ClientProvider>()
+                                                        .ongoingTeams[index]
+                                                        .team
+                                                        .teamName
                                                 ? const Color.fromARGB(
                                                         255, 206, 198, 247)
                                                     .withOpacity(0.3)
@@ -174,8 +181,11 @@ class _BodyState extends State<Body> {
                                           child: FittedBox(
                                             fit: BoxFit.contain,
                                             child: Text(
-                                              teamsController
-                                                  .teams[index].teamName,
+                                              context
+                                                  .read<ClientProvider>()
+                                                  .ongoingTeams[index]
+                                                  .team
+                                                  .teamName,
                                               style: const TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 18,

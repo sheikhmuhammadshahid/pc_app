@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/constants.dart';
-import 'package:pc_app/controllers/question_controller.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pc_app/screens/quiz/quiz_screen.dart';
-import 'package:pc_app/screens/welcome/welcome_screen.dart';
+
+import '../../constants.dart';
+import '../../controllers/question_controller.dart';
+import '../welcome/welcome_screen.dart';
 
 class ScoreScreen extends StatelessWidget {
   const ScoreScreen({super.key});

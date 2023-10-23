@@ -1,32 +1,31 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class eventss {
-  int id;
+class EventModel {
   String date;
   String type;
-  int? Tteams;
+  int id;
+  int tTeams;
   String status;
-  eventss({
-    required this.id,
+  EventModel({
     required this.date,
     required this.type,
-    this.Tteams,
+    required this.id,
+    required this.tTeams,
     required this.status,
   });
 
-  eventss copyWith({
-    int? id,
+  EventModel copyWith({
     String? date,
     String? type,
-    int? Tteams,
+    int? id,
+    int? tTeams,
     String? status,
   }) {
-    return eventss(
-      id: id ?? this.id,
+    return EventModel(
       date: date ?? this.date,
       type: type ?? this.type,
-      Tteams: Tteams ?? this.Tteams,
+      id: id ?? this.id,
+      tTeams: tTeams ?? this.tTeams,
       status: status ?? this.status,
     );
   }
@@ -34,55 +33,53 @@ class eventss {
   Map<String, dynamic> toMap() {
     final result = <String, dynamic>{};
 
-    result.addAll({'id': id});
     result.addAll({'date': date});
     result.addAll({'type': type});
-    if (Tteams != null) {
-      result.addAll({'Tteams': Tteams});
-    }
+    result.addAll({'id': id});
+    result.addAll({'tTeams': tTeams});
     result.addAll({'status': status});
 
     return result;
   }
 
-  factory eventss.fromMap(Map<String, dynamic> map) {
-    return eventss(
-      id: int.parse(map['id'] ?? 0),
+  factory EventModel.fromMap(Map<String, dynamic> map) {
+    return EventModel(
       date: map['date'] ?? '',
       type: map['type'] ?? '',
-      Tteams: int.parse(map['Tteams'] ?? ''),
+      id: int.parse(map['id'] ?? '0'),
+      tTeams: int.parse(map['tTeams'] ?? '0'),
       status: map['status'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory eventss.fromJson(String source) =>
-      eventss.fromMap(json.decode(source));
+  factory EventModel.fromJson(String source) =>
+      EventModel.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'eventss(id: $id, date: $date, type: $type, Tteams: $Tteams, status: $status)';
+    return 'EventModel(date: $date, type: $type, id: $id, tTeams: $tTeams, status: $status)';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is eventss &&
-        other.id == id &&
+    return other is EventModel &&
         other.date == date &&
         other.type == type &&
-        other.Tteams == Tteams &&
+        other.id == id &&
+        other.tTeams == tTeams &&
         other.status == status;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        date.hashCode ^
+    return date.hashCode ^
         type.hashCode ^
-        Tteams.hashCode ^
+        id.hashCode ^
+        tTeams.hashCode ^
         status.hashCode;
   }
 }

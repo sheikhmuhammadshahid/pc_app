@@ -1,4 +1,4 @@
-# pc_app
+# quiz_competition_flutter
 
 A new Flutter project.
 

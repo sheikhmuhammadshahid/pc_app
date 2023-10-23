@@ -1,6 +1,6 @@
 {
-    "name": "pc_app",
-    "short_name": "pc_app",
+    "name": "quiz_competition_flutter",
+    "short_name": "quiz_competition_flutter",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

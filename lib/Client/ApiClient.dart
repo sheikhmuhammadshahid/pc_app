@@ -1,32 +1,33 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dio/dio.dart' as d;
+import 'package:dio/dio.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/controllers/EventsController.dart';
-import 'package:pc_app/controllers/TeamsController.dart';
-import 'package:pc_app/controllers/question_controller.dart';
-import 'package:pc_app/models/Event.dart';
-import 'package:pc_app/models/QuestionModel.dart';
-import 'package:pc_app/models/TeamModel.dart';
+import 'package:quiz_competition_flutter/models/OnGoingTeamsModel.dart';
+
+// import 'package:quiz_competition_client/quiz_competition_client.dart';
 
 import '../Client/Clients.dart';
+import '../controllers/EventsController.dart';
+import '../controllers/TeamsController.dart';
+import '../controllers/question_controller.dart';
+import '../models/EventModel.dart';
+import '../models/MemberModel.dart';
+import '../models/Question.dart';
+import '../models/TeamModel.dart';
 
 String ip = 'https://compitionapp.cozyreach.com/';
 String imageAddress = 'https://compitionapp.cozyreach.com/images/';
 
 d.Options options = d.Options(headers: {'Content-Type': 'application/json'});
-getQuestionss(eventId) async {
-  // var controller = Get.find<QuestionController>();
-  // if (controller.ipAddress == "") {
-  //   controller.ipAddress = await Client().getIp();
-  // }
+getQuestionss({required int eventId}) async {
   List<Question> questions = [];
   try {
-    //var contr = Get.find<EventController>();
-
     var response =
         await d.Dio().get('${ip}getQuestionsApi.php?eventId=$eventId');
+    print(response.data);
     if (response.statusCode == 200) {
       for (var element in response.data) {
         questions.add(Question.fromMap(element));
@@ -41,48 +42,64 @@ getQuestionss(eventId) async {
 }
 
 getEventsLists() async {
-  QuestionController controller;
+  EventController controller;
 
-  controller = Get.find<QuestionController>();
+  controller = Get.find<EventController>();
 
-  List<eventss> events = [];
+  List<EventModel> events = [];
   try {
     var url = '${ip}getEventsApi.php';
     var response = await d.Dio().get(url);
     if (response.statusCode == 200) {
       for (var element in response.data) {
-        events.add(eventss.fromMap(element));
+        events.add(EventModel.fromMap(element));
       }
       //return v.m
     }
   } catch (e) {
     print(e);
   }
-
+  controller.eventssList.value = events;
+  controller.filteredEvents.value = events;
   return events;
 }
 
-saveQuestions({required List<Question> questions}) async {
+deleteTeam({required int teamId}) async {
   try {
-    for (var element in questions) {
-      try {
-        await d.Dio().post('${ip}addQuestionApi.php',
-            data: element.toJson(), options: options);
-      } catch (e) {
-        EasyLoading.showToast(e.toString());
-      }
-    }
+    EasyLoading.show(status: 'Deleting', dismissOnTap: false);
+    await Dio().get('${ip}deleteTeamApi.php?teamId=$teamId');
     EasyLoading.dismiss();
-    EasyLoading.showToast('Questions Saved Successfully!');
+  } catch (e) {}
+}
+
+deleteMemberApi({required int memberId}) async {
+  try {
+    await Dio().get('${ip}deleteMemberApi.php?memberId=$memberId');
+  } catch (e) {}
+}
+
+saveQuestions({required List<Question> questions, required int eventId}) async {
+  try {
+    List<Map<String, dynamic>> data = [];
+    for (var element in questions) {
+      data.add(element.toMap());
+    }
+    try {
+      await d.Dio().post('${ip}addQuestionApi.php?eventId=$eventId',
+          data: jsonEncode(data), options: options);
+    } catch (e) {
+      EasyLoading.showToast(e.toString());
+    }
+    // or (var element in questions) {}
   } catch (e) {
     EasyLoading.dismiss();
   }
 }
 
-deleteEvent(eventss e) async {
+deleteEvent({required EventModel e}) async {
   var controller = Get.find<QuestionController>();
   if (controller.ipAddress == "") {
-    controller.ipAddress = await Client().getIp();
+    controller.ipAddress = await ClientGetController().getIp();
   }
   try {
     var response = await d.Dio().get(
@@ -97,34 +114,39 @@ deleteEvent(eventss e) async {
   }
 }
 
-getTeamsDetails(int eventId) async {
-  // var controller = Get.find<QuestionController>();
-  // if (controller.ipAddress == "") {
-  //   controller.ipAddress = await Client().getIp();
-  // }
+Future<List<OnGoingTeams>> getTeamsDetails({required int eventId}) async {
   var teams = Get.find<TeamsController>();
   try {
-    var v = Get.find<QuestionController>();
-
     var response = await d.Dio().get(
       '${ip}getEventDetail.php?event_id=$eventId',
     );
-    teams.teams.clear();
+    teams.ongoingTeams.clear();
     if (response.statusCode == 200) {
-      //Get.snackbar('Event', response.data);
-
       for (var element in response.data) {
-        //return v.m
-        teams.teams.add(team.fromMap(element));
+        teams.ongoingTeams.add(OnGoingTeams(
+          members: List<MemberModel>.from(
+              element['members']?.map((x) => MemberModel.fromMap(x))),
+          team: TeamModel(
+              id: element['id'],
+              teamName: element['teamName'],
+              teamType: element['TeamType'],
+              scores: 0,
+              totalMembers: 0,
+              buzzerRound: 0,
+              mcqRound: 0,
+              rapidRound: 0,
+              buzzerWrong: 0),
+          teamId: element['id'],
+        ));
       }
     }
   } catch (e) {
     print(e);
   }
-  return teams.teams;
+  return teams.ongoingTeams;
 }
 
-saveEvent(eventss event) async {
+saveEvent({required EventModel event}) async {
   try {
     EventController eventController = Get.find<EventController>();
 
@@ -149,22 +171,21 @@ saveEvent(eventss event) async {
   }
 }
 
-addTeams({required List<team> members, required int eventId}) async {
+addTeams({required List<OnGoingTeams> members, required int eventId}) async {
   try {
     var res =
-        await d.Dio().get('${ip}ClearEventDetailApi.php?event_id=$eventId');
+        await d.Dio().get('${ip}ClearEventDetailApi.php?eventId=$eventId');
     for (var element in members) {
       await EasyLoading.dismiss();
       EasyLoading.show(
-          status: 'uploading data of team ${element.teamName}',
+          status: 'uploading data of team ${element.team.teamName}',
           dismissOnTap: false);
-      var response = await d.Dio().post('${ip}AddTeamApi.php',
-          options: options,
-          data: {
-            "teamName": element.teamName,
-            "TeamType": element.TeamType,
-            "eventId": eventId
-          });
+      var response =
+          await d.Dio().post('${ip}AddTeamApi.php', options: options, data: {
+        "teamName": element.team.teamName,
+        "TeamType": element.team.teamType,
+        "eventId": eventId
+      });
 
       if (response.statusCode == 201) {
         int teamid = int.parse(response.data);

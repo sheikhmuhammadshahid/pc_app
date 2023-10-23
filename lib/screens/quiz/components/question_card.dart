@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/controllers/question_controller.dart';
-
-import 'package:pc_app/screens/quiz/components/option.dart';
+import 'package:provider/provider.dart';
+import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 
 import '../../../Client/Clients.dart';
 import '../../../constants.dart';
-import '../../../models/QuestionModel.dart';
+import '../../../controllers/question_controller.dart';
+import '../../../models/Question.dart';
+import 'option.dart';
 
 class QuestionCard extends StatelessWidget {
   QuestionCard({
@@ -15,7 +16,7 @@ class QuestionCard extends StatelessWidget {
     @required this.question,
   }) : super(key: key);
   var quesController = Get.find<QuestionController>();
-  var clientController = Get.find<Client>();
+  var clientController = Get.find<ClientGetController>();
   Question? question;
   Rx<Color> QBColor =
       const Color.fromARGB(255, 206, 198, 247).withOpacity(.6).obs;
@@ -24,7 +25,7 @@ class QuestionCard extends StatelessWidget {
     QuestionController controller;
 
     controller = Get.find<QuestionController>();
-
+    ClientProvider clientProvider = context.read<ClientProvider>();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       padding: const EdgeInsets.all(kDefaultPadding),
@@ -39,7 +40,7 @@ class QuestionCard extends StatelessWidget {
               () {
                 return GestureDetector(
                   onTap: () {
-                    if (controller.round == 'buzzer') {
+                    if (clientProvider.round == 'buzzer') {
                       QBColor.value = const Color.fromARGB(255, 254, 180, 180)
                           .withOpacity(.6);
                     }
@@ -70,8 +71,8 @@ class QuestionCard extends StatelessWidget {
               text: question!.opt1,
               press: () {
                 if (!controller.isAnswered.value) {
-                  clientController
-                      .sendMessage("#1#${quesController.questionNumber.value}");
+                  // clientController
+                  //     .sendMessage("#1#${quesController.questionNumber.value}");
                   controller.checkAns(question!, question!.opt1);
                 }
               },
@@ -80,33 +81,33 @@ class QuestionCard extends StatelessWidget {
               index: 1,
               text: question!.opt2,
               press: () {
-                if (!controller.isAnswered.value) {
-                  clientController
-                      .sendMessage("#2#${quesController.questionNumber.value}");
-                  controller.checkAns(question!, question!.opt2);
-                }
+                // if (!controller.isAnswered.value) {
+                //   // clientController
+                //   //     .sendMessage("#2#${quesController.questionNumber.value}");
+                //   controller.checkAns(question!, question!.opt2);
+                // }
               },
             ),
             Option(
               index: 2,
               text: question!.opt3,
               press: () {
-                if (!controller.isAnswered.value) {
-                  clientController
-                      .sendMessage("#3#${quesController.questionNumber.value}");
-                  controller.checkAns(question!, question!.opt3);
-                }
+                // if (!controller.isAnswered.value) {
+                //   // clientController
+                //   //     .sendMessage("#3#${quesController.questionNumber.value}");
+                //   controller.checkAns(question!, question!.opt3);
+                // }
               },
             ),
             Option(
               index: 3,
               text: question!.opt4,
               press: () {
-                if (!controller.isAnswered.value) {
-                  clientController
-                      .sendMessage("#4#${quesController.questionNumber.value}");
-                  controller.checkAns(question!, question!.opt4);
-                }
+                // if (!controller.isAnswered.value) {
+                //   // clientController
+                //   //     .sendMessage("#4#${quesController.questionNumber.value}");
+                //   controller.checkAns(question!, question!.opt4);
+                // }
               },
             )
           ],

@@ -1,12 +1,14 @@
 import 'package:get/get.dart';
-import 'package:pc_app/Apis/ApisFunctions.dart';
-import 'package:pc_app/models/Event.dart';
+import 'package:quiz_competition_flutter/main.dart';
+
+import '../Client/ApiClient.dart';
+import '../models/EventModel.dart';
 
 class EventController extends GetxController
     with GetSingleTickerProviderStateMixin {
   RxList eventssList = [].obs;
   RxBool isLoading = true.obs;
-  eventss? onGoingEvent;
+  EventModel? onGoingEvent;
   int team = 0;
   RxList filteredEvents = [].obs;
 
@@ -41,7 +43,6 @@ class EventController extends GetxController
     eventssList.value = await getEventsLists();
     filteredEvents.value = eventssList;
     isLoading.value = false;
-
     return eventssList;
     //notifyChildrens();
   }

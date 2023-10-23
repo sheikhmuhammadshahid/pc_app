@@ -1,21 +1,17 @@
 import 'package:get/get.dart';
-import 'package:pc_app/controllers/question_controller.dart';
-import 'package:pc_app/models/TeamModel.dart';
 
-import '../Apis/ApisFunctions.dart';
+import '../models/OnGoingTeamsModel.dart';
 
-class TeamsController extends GetxController
-    with GetSingleTickerProviderStateMixin {
-  List<team> teams = [];
-  RxInt connectedTeams = 0.obs;
-  getTeamsDetail() async {
-    teams = await getTeamsDetails(Get.find<QuestionController>().eventId);
-    for (int i = 0; i < teams.length; i++) {
-      teams[i].buzzerRound = 0;
-      teams[i].rapidRound = 0;
-      teams[i].buzzerWrong = 0;
-      teams[i].mcqRound = 0;
-      teams[i].scores = 0;
-    }
-  }
+class TeamsController extends GetxController {
+  List<OnGoingTeams> ongoingTeams = [];
+  // RxInt connectedTeams = (-1).obs;
+  // getTeamsDetail() async {
+  //   print('aerwnnwne');
+  //   ongoingTeams.value = await client.members
+  //       .getMembersDetail(eventId: Get.find<QuestionController>().eventId);
+  //   print(ongoingTeams);
+  //   // connectedTeams.value = 0;
+
+  //   // connectedTeams.value = ongoingTeams.length;
+  // }
 }

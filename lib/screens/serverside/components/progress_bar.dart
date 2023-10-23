@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/controllers/question_controller.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 
 import '../../../constants.dart';
+import '../../../controllers/question_controller.dart';
 
 class ProgressBar extends StatelessWidget {
-  ProgressBar({
+  const ProgressBar({
     Key? key,
   }) : super(key: key);
 
-  QuestionController controller = Get.find<QuestionController>();
+  // QuestionController controller = Get.find<QuestionController>();
+
   @override
   Widget build(BuildContext context) {
+    ClientProvider clientProvider = context.read<ClientProvider>();
     return Container(
       width: double.infinity,
       height: 35,
@@ -46,7 +50,7 @@ class ProgressBar extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "${(controller.animation.value * (controller.round == 'rapid' ? 120 : controller.round == 'buzzer' ? 5 : 60)).round()} sec",
+                        "${(controller.animation.value * (clientProvider.round == 'rapid' ? 120 : clientProvider.round == 'buzzer' ? 5 : 60)).round()} sec",
                         style: const TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
                       ),

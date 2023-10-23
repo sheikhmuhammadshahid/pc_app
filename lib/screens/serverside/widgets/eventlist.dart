@@ -1,22 +1,30 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pc_app/Client/Clients.dart';
-import 'package:pc_app/constants.dart';
-import 'package:pc_app/controllers/EventsController.dart';
-import 'package:pc_app/controllers/question_controller.dart';
-import 'package:pc_app/screens/AddEvent/AddMember.dart';
+import 'package:provider/provider.dart';
+import 'package:quiz_competition_flutter/Client/ApiClient.dart';
+import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
+import 'package:quiz_competition_flutter/Client/Clients.dart';
+import 'package:quiz_competition_flutter/main.dart';
+import 'package:quiz_competition_flutter/screens/welcome/Admin/AdminScreen2.dart';
 //import 'package:pc_app/screens/serverside/Model/Events.dart';
-import 'package:pc_app/screens/serverside/widgets/que_screen.dart';
-import 'package:pc_app/screens/welcome/Admin/AdminScreen.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../Apis/ApisFunctions.dart';
-import '../../../models/Event.dart';
+import '../../../constants.dart';
+import '../../../controllers/EventsController.dart';
+import '../../../controllers/question_controller.dart';
+import '../../../models/MyMessage.dart';
 import '../../AddEvent/AddEvent.dart';
+import '../../AddEvent/AddMember.dart';
+import '../../welcome/Admin/AdminScreen.dart';
 import 'eventcard.dart';
+import 'que_screen.dart';
 
 class RestaurantList extends StatefulWidget {
   //final List<eventss> restaurantList;
@@ -33,7 +41,7 @@ class RestaurantList extends StatefulWidget {
 class _RestaurantListState extends State<RestaurantList> {
   var controller = Get.find<EventController>();
   var c = Get.find<QuestionController>();
-  Client clientController = Get.find<Client>();
+  ClientGetController clientController = Get.find<ClientGetController>();
   @override
   void initState() {
     super.initState();
@@ -57,8 +65,9 @@ class _RestaurantListState extends State<RestaurantList> {
             )
           : RefreshIndicator(
               onRefresh: () async {
-                await Future.delayed(const Duration(seconds: 1)).then((value) {
-                  getEventsLists();
+                await Future.delayed(const Duration(seconds: 1))
+                    .then((value) async {
+                  await getEventsLists();
                   return true;
                 });
               },
@@ -70,7 +79,7 @@ class _RestaurantListState extends State<RestaurantList> {
                         MediaQuery.of(context).size.width <= 600 ? 2 : 3,
                     childAspectRatio: MediaQuery.of(context).size.width <= 600
                         ? 2 / 2.5
-                        : 2 / 1),
+                        : 1.7 / 1),
                 itemBuilder: (context, index) {
                   if (index == 0) {
                     return FittedBox(
@@ -252,9 +261,12 @@ class _RestaurantListState extends State<RestaurantList> {
                                           ),
                                           onPressed: () async {
                                             Navigator.pop(context);
-                                            await deleteEvent(controller
-                                                .filteredEvents[index - 1]);
-                                            eventss event = controller
+                                            await deleteEvent(
+                                                e: controller
+                                                    .filteredEvents[index - 1]);
+                                            // await deleteEvent(controller
+                                            //     .filteredEvents[index - 1]);
+                                            var event = controller
                                                 .filteredEvents[index - 1];
                                             controller.eventssList
                                                 .remove(event);
@@ -515,24 +527,34 @@ class _RestaurantListState extends State<RestaurantList> {
             backgroundColor: const Color.fromARGB(218, 255, 255, 255),
           ),
           onPressed: (() async {
-            c.round = text.toLowerCase();
+            // c.round = text.toLowerCase();
+            context.read<ClientProvider>().round = text.toLowerCase();
+            context.read<ClientProvider>().eventId =
+                controller.filteredEvents[index - 1].id;
 
-            c.eventId = controller.filteredEvents[index - 1].id;
-            clientController.sendMessage('eventId:${c.eventId}');
-            clientController.sendMessage('round:${c.round}');
+            // clientController.sendMessage('eventId:${c.eventId}');
+            // clientController.sendMessage('round:${c.round}');
+
+            // await client.pixorama.sendStreamMessage(MyMessage(
+            //     todo: 'eventId',
+            //     value: context.read<ClientProvider>().eventId.toString()));
             controller.onGoingEvent = controller.filteredEvents[index - 1];
-            Navigator.pushReplacement(context, MaterialPageRoute(
-              builder: (context) {
-                return Get.find<Client>()
-                        .nameController
-                        .value
-                        .text
-                        .toLowerCase()
-                        .startsWith('adm')
-                    ? const AdminScreen()
-                    : ServerQuizScreen(text.toLowerCase());
-              },
-            ));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return const AdminScreen2();
+                  // return Get.find<ClientGetController>()
+                  //         .nameController
+                  //         .value
+                  //         .text
+                  //         .toLowerCase()
+                  //         .startsWith('adm')
+                  //     ? const AdminScreen()
+                  //     : ServerQuizScreen(text.toLowerCase());
+                },
+              ),
+            );
           }),
           child: Text(
             text,

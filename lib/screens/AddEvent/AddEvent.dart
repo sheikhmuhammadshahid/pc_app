@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/constants.dart';
-
-import '../../Apis/ApisFunctions.dart';
-import '../../models/Event.dart';
+import 'package:quiz_competition_flutter/Client/ApiClient.dart';
+import 'package:quiz_competition_flutter/controllers/EventsController.dart';
+import 'package:quiz_competition_flutter/main.dart';
+import '../../constants.dart';
+import '../../models/EventModel.dart';
 //import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 
 class AddEventScreen extends StatefulWidget {
@@ -96,7 +97,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                               value: eventtype,
                               onChanged: (newValue) {
                                 setState(() {
-                                  eventtype = newValue;
+                                  eventtype = newValue.toString();
                                 });
                               },
                               items: events.map<DropdownMenuItem<String>>(
@@ -142,7 +143,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                               value: noOfTeams,
                               onChanged: (newValue) {
                                 setState(() {
-                                  noOfTeams = newValue;
+                                  noOfTeams = newValue.toString();
                                 });
                               },
                               items: noteams.map<DropdownMenuItem<String>>(
@@ -190,8 +191,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     dateTime = await showDatePicker(
                                       context: context,
                                       initialDate: dateTime ?? DateTime.now(),
-                                      firstDate: DateTime(
-                                          2000), // Set the first date that can be selected
+                                      firstDate: DateTime
+                                          .now(), // Set the first date that can be selected
                                       lastDate: DateTime(
                                           2101), // Set the last date that can be selected
                                     );
@@ -243,13 +244,16 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          eventss e = eventss(
+                          EventModel e = EventModel(
                               id: 0,
                               date: dateTime.toString().split(' ')[0],
                               type: eventtype!,
                               status: 'created',
-                              Tteams: 0);
-                          await saveEvent(e);
+                              tTeams: 0);
+                          await saveEvent(event: e);
+                          Get.find<EventController>().eventssList.add(e);
+                          Get.find<EventController>().filteredEvents.add(e);
+                          Get.back();
                         }
                       },
                       child: const Text(

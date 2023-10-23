@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/Client/ClientDetails.dart';
-import 'package:pc_app/Client/Clients.dart';
-import 'package:pc_app/constants.dart';
 import 'package:provider/provider.dart';
 
+import 'Client/ClientDetails.dart';
+import 'Client/Clients.dart';
+import 'constant.dart';
+
 getConnectToServerDialogue({required BuildContext context}) async {
-  Client client = Get.find<Client>();
+  ClientGetController client = Get.find<ClientGetController>();
   final formKey = GlobalKey<FormState>();
   await showCupertinoModalPopup(
     context: context,
@@ -60,9 +61,8 @@ getConnectToServerDialogue({required BuildContext context}) async {
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 Get.back();
-                await Get.find<Client>().connectToServer(
-                    client.ipController.value.text,
-                    context.read<ClientProvider>());
+                await Get.find<ClientGetController>()
+                    .connectToServer(context.read<ClientProvider>());
               }
             },
             child: const Text('Connect'))

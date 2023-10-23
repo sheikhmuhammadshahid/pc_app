@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/constants.dart';
-import 'package:pc_app/controllers/question_controller.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pc_app/screens/quiz/components/progress_bar.dart';
+import 'package:provider/provider.dart';
 
+import '../../../Client/ClientDetails.dart';
+import '../../../constants.dart';
+import '../../../controllers/question_controller.dart';
+import 'progress_bar.dart';
 import 'question_card.dart';
 
 class Body extends StatelessWidget {
@@ -14,11 +16,8 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // So that we have acccess our controller
-    QuestionController questionController;
-
-    questionController = Get.find<QuestionController>();
-
+    ClientProvider clientProvider = context.read<ClientProvider>();
+    clientProvider.pageController = PageController();
     return Stack(
       children: [
         SvgPicture.asset("assets/icons/bg.svg", fit: BoxFit.fill),
@@ -34,25 +33,24 @@ class Body extends StatelessWidget {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-                child: Obx(
-                  () => Text.rich(
-                    TextSpan(
-                      text:
-                          "Question ${questionController.questionNumber.value}",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium!
-                          .copyWith(color: kSecondaryColor),
-                      children: [
-                        TextSpan(
-                          text: "/${questionController.questions.length}",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .copyWith(color: kSecondaryColor),
-                        ),
-                      ],
-                    ),
+                child: Text.rich(
+                  TextSpan(
+                    text:
+                        "Question ${context.watch<ClientProvider>().questionNo + 1}",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium!
+                        .copyWith(color: kSecondaryColor),
+                    children: [
+                      TextSpan(
+                        text:
+                            "/${context.watch<ClientProvider>().questions.length}",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall!
+                            .copyWith(color: kSecondaryColor),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -62,11 +60,11 @@ class Body extends StatelessWidget {
                 child: PageView.builder(
                   // Block swipe to next qn
                   physics: const NeverScrollableScrollPhysics(),
-                  controller: questionController.pageController,
+                  controller: clientProvider.pageController,
                   //onPageChanged: questionController.updateTheQnNum,
-                  itemCount: questionController.questions.length,
-                  itemBuilder: (context, index) => QuestionCard(
-                      question: questionController.questions[index]),
+                  itemCount: clientProvider.questions.length,
+                  itemBuilder: (context, index) =>
+                      QuestionCard(question: clientProvider.questions[index]),
                 ),
               ),
               const SizedBox(

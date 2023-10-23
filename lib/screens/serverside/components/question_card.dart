@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/controllers/question_controller.dart';
+import 'package:provider/provider.dart';
 
-import 'package:pc_app/screens/quiz/components/option.dart';
-
+import '../../../Client/ClientDetails.dart';
 import '../../../constants.dart';
-import '../../../models/QuestionModel.dart';
+import '../../../controllers/question_controller.dart';
+import '../../../models/Question.dart';
+import '../../quiz/components/option.dart';
 
 class QuestionCard extends StatelessWidget {
   QuestionCard({
@@ -17,18 +18,15 @@ class QuestionCard extends StatelessWidget {
   Question? question;
   Rx<Color> QBColor =
       const Color.fromARGB(255, 206, 198, 247).withOpacity(.6).obs;
-
+  QuestionController controller = Get.find<QuestionController>();
   @override
   Widget build(BuildContext context) {
-    QuestionController controller;
-
-    controller = Get.find<QuestionController>();
-
+    ClientProvider clientProvider = context.read<ClientProvider>();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       padding: const EdgeInsets.all(kDefaultPadding * .52),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 206, 198, 247).withOpacity(0.3),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(25),
       ),
       child: SingleChildScrollView(
@@ -38,8 +36,8 @@ class QuestionCard extends StatelessWidget {
               onTap: () {},
               child: Obx(() {
                 return Container(
-                  width: controller.round != 'rapid'
-                      ? MediaQuery.of(context).size.width * .35
+                  width: clientProvider.round != 'rapid'
+                      ? MediaQuery.of(context).size.width * .45
                       : MediaQuery.of(context).size.width * .6,
                   margin: const EdgeInsets.only(top: kDefaultPadding),
                   padding: const EdgeInsets.all(kDefaultPadding * 0.6),
@@ -60,7 +58,7 @@ class QuestionCard extends StatelessWidget {
               }),
             ),
             const SizedBox(width: kDefaultPadding),
-            if (controller.round != 'rapid')
+            if (clientProvider.round != 'rapid')
               Container(
                 width: MediaQuery.of(context).size.width * .45,
                 margin: const EdgeInsets.only(top: kDefaultPadding),
@@ -85,7 +83,7 @@ class QuestionCard extends StatelessWidget {
                       index: 0,
                       text: question!.opt1,
                       press: () {
-                        // controller.checkAns(question!, question!.opt1);
+                        controller.checkAns(question!, question!.opt1);
                       },
                     ),
                     Option(

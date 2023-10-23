@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/Client/ClientDetails.dart';
-import 'package:pc_app/constants.dart';
 import 'package:provider/provider.dart';
 
+import '../../Client/ClientDetails.dart';
 import '../../Client/Clients.dart';
+import '../../constants.dart';
 
 class WelcomeScreen extends StatelessWidget {
-  Client client = Get.find<Client>();
+  ClientGetController clients = Get.find<ClientGetController>();
 
   WelcomeScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    client.getIp();
+    clients.getIp();
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
@@ -80,7 +81,7 @@ class WelcomeScreen extends StatelessWidget {
                       Obx(
                         () {
                           return getTextInputField(
-                              client.nameController, 'Enter name');
+                              clients.nameController, 'Enter name');
                         },
                       ),
 
@@ -91,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
                       Obx(
                         () {
                           return getTextInputField(
-                              client.ipController, 'Enter Ip');
+                              clients.ipController, 'Enter Ip');
                         },
                       ),
 
@@ -101,32 +102,47 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                       InkWell(
                         onTap: () async {
-                          if (client.ipController.value.text != "" &&
-                              client.nameController.value.text != "") {
-                            Get.defaultDialog(
-                                backgroundColor: Colors.black38,
-                                barrierDismissible: false,
-                                title: '',
-                                content: const SizedBox(
-                                  width: 300,
-                                  height: 100,
-                                  child: Column(
-                                    children: [
-                                      Text('Trying to connect...'),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      CircularProgressIndicator()
-                                    ],
-                                  ),
-                                ));
-                            await client.connectToServer(
-                                client.ipController.value.text.trim(),
+                          if (clients.ipController.value.text != "" &&
+                              clients.nameController.value.text != "") {
+                            // if sockets uncomment it
+
+                            // Get.defaultDialog(
+                            //     backgroundColor: Colors.black38,
+                            //     barrierDismissible: false,
+                            //     title: '',
+                            //     content: const SizedBox(
+                            //       width: 300,
+                            //       height: 100,
+                            //       child: Column(
+                            //         children: [
+                            //           Text('Trying to connect...'),
+                            //           SizedBox(
+                            //             height: 10,
+                            //           ),
+                            //           CircularProgressIndicator()
+                            //         ],
+                            //       ),
+                            //     ));
+                            EasyLoading.show(
+                                status: 'Trying to connect...',
+                                dismissOnTap: false);
+                            ClientGetController clientGetController =
+                                Get.find<ClientGetController>();
+                            await clientGetController.connectToServer(
                                 context.read<ClientProvider>());
-                          } else if (client.nameController.value.text == "") {
+
+                            //     context.read<ClientProvider>());
+
+                            // if serverpod uncomment it
+
+                            // await client.pixorama.sendStreamMessage(MyMessage(
+                            //     todo: 'connected',
+                            //     value: clients.nameController.value.text));
+                            // Get.back();
+                          } else if (clients.nameController.value.text == "") {
                             Get.snackbar('', 'Please enter name',
                                 colorText: Colors.black);
-                          } else if (client.ipController.value.text == "") {
+                          } else if (clients.ipController.value.text == "") {
                             Get.snackbar('', 'Please enter ip Address',
                                 colorText: Colors.black);
                           }
@@ -141,7 +157,7 @@ class WelcomeScreen extends StatelessWidget {
                             borderRadius: BorderRadius.all(Radius.circular(12)),
                           ),
                           child: Text(
-                            "Lets Start Quiz",
+                            "Join",
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge!

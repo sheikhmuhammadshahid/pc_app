@@ -4,16 +4,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:pc_app/constants.dart';
-import 'package:pc_app/models/Event.dart';
-import 'package:pc_app/models/memberModel.dart';
-import 'package:pc_app/screens/AddEvent/AddQuestions.dart';
+import 'package:quiz_competition_flutter/Client/ApiClient.dart';
 
-import '../../Apis/ApisFunctions.dart';
+import '../../AddQuestion.dart';
+import '../../constants.dart';
+import '../../models/EventModel.dart';
+import '../../models/MemberModel.dart';
+import '../../models/OnGoingTeamsModel.dart';
 import '../../models/TeamModel.dart';
 
 class AddMembersScreen extends StatefulWidget {
-  eventss event;
+  EventModel event;
   AddMembersScreen({super.key, required this.event});
 
   @override
@@ -28,7 +29,7 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
   TextEditingController semester = TextEditingController();
   TextEditingController phone = TextEditingController();
   List<String> noteams = ['1', '2', '3', '4', '5'];
-  List<team> membersAdded = [];
+  List<OnGoingTeams> membersAdded = [];
   final _formKey = GlobalKey<FormState>();
   String? image;
   @override
@@ -40,7 +41,7 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
   }
 
   getData() async {
-    membersAdded = await getTeamsDetails(widget.event.id);
+    membersAdded = await getTeamsDetails(eventId: widget.event.id);
     setState(() {
       isLoading = false;
     });
@@ -48,96 +49,148 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
 
   bool isLoading = true;
   bool isMobile = false;
+  bool isChanges = false;
+
+  saveTeams() async {
+    try {
+      EasyLoading.show(status: 'Saving...');
+      await addTeams(members: membersAdded, eventId: widget.event.id ?? 0);
+      EasyLoading.dismiss();
+      Get.back();
+    } catch (e) {}
+  }
+
+  showConfirmationDialogue({required bool toQuestionScreen}) async {
+    return await showCupertinoModalPopup(
+      context: context,
+      builder: (context) => AlertDialog(
+        actions: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, toQuestionScreen ? false : true);
+              },
+              child: const Text('Exit')),
+          ElevatedButton(
+              onPressed: () async {
+                await saveTeams();
+                if (!toQuestionScreen) {
+                  Navigator.pop(context, true);
+                }
+              },
+              child: const Text('Save?'))
+        ],
+        content: const Text(
+            'You have some changes to save.\n Please make sure to save them first'),
+        icon: Align(
+            alignment: Alignment.topRight,
+            child: IconButton(
+                onPressed: () {
+                  Navigator.pop(context, false);
+                },
+                icon: const Icon(Icons.cancel))),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     isMobile = context.width <= 600;
-    return isLoading
-        ? const Center(
-            child: SizedBox(
-              height: 80,
-              width: 80,
-              child: CircularProgressIndicator(),
-            ),
-          )
-        : Scaffold(
-            backgroundColor: Colors.white,
-            appBar: AppBar(
-              backgroundColor: careem,
-              actions: const [],
-              title: Text(
-                widget.event.type,
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+    return WillPopScope(
+        onWillPop: () async {
+          if (isChanges) {
+            return await showConfirmationDialogue(toQuestionScreen: false);
+          } else {
+            return true;
+          }
+        },
+        child: isLoading
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : Scaffold(
+                backgroundColor: Colors.white,
+                appBar: AppBar(
+                  backgroundColor: careem,
+                  actions: const [],
+                  title: Text(
+                    widget.event.type,
+                    style: const TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            body: SingleChildScrollView(
-              //physics: const NeverScrollableScrollPhysics(),
-              //scrollDirection: Axis.horizontal,
-              child: Column(
-                children: [
-                  Row(
+                body: SingleChildScrollView(
+                  //physics: const NeverScrollableScrollPhysics(),
+                  //scrollDirection: Axis.horizontal,
+                  child: Column(
                     children: [
-                      if (membersAdded.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20.0),
-                          child: ElevatedButton(
+                      Row(
+                        children: [
+                          if (membersAdded.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 20.0),
+                              child: ElevatedButton(
+                                  onPressed: () async {
+                                    await showCupertinoModalPopup(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        actions: [
+                                          ElevatedButton(
+                                              onPressed: () async {
+                                                await saveTeams();
+                                              },
+                                              child: const Text('Yes')),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Get.back();
+                                              },
+                                              child: const Text('No'))
+                                        ],
+                                        content: const Text(
+                                            'Are you sure to save this?'),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Save')),
+                            ),
+                          ElevatedButton(
                               onPressed: () async {
-                                await showCupertinoModalPopup(
-                                  context: context,
-                                  builder: (context) => AlertDialog(
-                                    actions: [
-                                      ElevatedButton(
-                                          onPressed: () async {
-                                            EasyLoading.show(
-                                                status: 'Saving...');
-                                            addTeams(
-                                                eventId: widget.event.id,
-                                                members: membersAdded);
-                                            Get.back();
-                                          },
-                                          child: const Text('Yes')),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            Get.back();
-                                          },
-                                          child: const Text('No'))
-                                    ],
-                                    content: const Text(
-                                        'Are you sure to save this?'),
-                                  ),
-                                );
+                                if (!isChanges) {
+                                  Get.to(
+                                      AddQuestionsScreen(event: widget.event));
+                                } else {
+                                  bool res = await showConfirmationDialogue(
+                                      toQuestionScreen: true);
+                                  if (res) {
+                                    Get.to(AddQuestionsScreen(
+                                        event: widget.event));
+                                  }
+                                }
                               },
-                              child: const Text('Save')),
+                              child: const Text('Questions')),
+                          const SizedBox(
+                            width: 15,
+                          )
+                        ],
+                      ),
+                      if (context.width <= 600)
+                        ...getWidgets()
+                      else
+                        SingleChildScrollView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: getWidgets(),
+                          ),
                         ),
-                      ElevatedButton(
-                          onPressed: () {
-                            Get.to(AddQuestionsScreen(event: widget.event));
-                          },
-                          child: const Text('Questions')),
-                      const SizedBox(
-                        width: 15,
-                      )
                     ],
                   ),
-                  if (context.width <= 600)
-                    ...getWidgets()
-                  else
-                    SingleChildScrollView(
-                      physics: const NeverScrollableScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: getWidgets(),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          );
+                ),
+              ));
   }
 
   List<Widget> getWidgets() {
@@ -204,7 +257,7 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                     value: noOfteams,
                     onChanged: (newValue) {
                       setState(() {
-                        noOfteams = newValue;
+                        noOfteams = newValue.toString();
                       });
                     },
                     items:
@@ -302,52 +355,66 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
         ),
         onPressed: () {
           if (_formKey.currentState!.validate()) {
-            List<team> data = membersAdded
-                .where((element) => element.teamName == teamName.text.trim())
+            List<OnGoingTeams> data = membersAdded
+                .where(
+                    (element) => element.team.teamName == teamName.text.trim())
                 .toList();
+            // TeamModel? t;
             if (data.isEmpty) {
-              membersAdded.add(team(
-                  teamName: teamName.text.trim(),
-                  members: [],
-                  TeamType: widget.event.type,
-                  id: 0,
-                  buzzerRound: 0,
-                  buzzerWrong: 0,
-                  mcqRound: 0,
-                  rapidRound: 0,
-                  scores: 1,
-                  totalmembers: 0));
+              membersAdded.add(
+                OnGoingTeams(
+                    members: [],
+                    team: TeamModel(
+                        teamName: teamName.text.trim(),
+                        // members: [],
+                        teamType: widget.event.type,
+                        id: 0,
+                        buzzerRound: 0,
+                        buzzerWrong: 0,
+                        mcqRound: 0,
+                        rapidRound: 0,
+                        scores: 1,
+                        totalMembers: 0
+                        // totalmembers: 0
+                        ),
+                    teamId: -1),
+              );
               data = [];
-              data.add(team(
-                  teamName: teamName.text.trim(),
+              data.add(OnGoingTeams(
                   members: [],
-                  TeamType: widget.event.type,
-                  id: 0,
-                  buzzerRound: 0,
-                  buzzerWrong: 0,
-                  mcqRound: 0,
-                  rapidRound: 0,
-                  scores: 1,
-                  totalmembers: 0));
+                  team: TeamModel(
+                      teamName: teamName.text.trim(),
+                      // members: [],
+                      teamType: widget.event.type,
+                      id: 0,
+                      buzzerRound: 0,
+                      buzzerWrong: 0,
+                      mcqRound: 0,
+                      rapidRound: 0,
+                      scores: 1,
+                      totalMembers: 0),
+                  teamId: -1));
             }
 
             if (membersAdded[membersAdded.indexWhere(
-                      (element) => element.teamName == data[0].teamName,
+                      (element) =>
+                          element.team.teamName == data[0].team.teamName,
                     )]
                         .members
                         .length <
                     int.parse(noOfteams ?? '0') ||
                 membersAdded[membersAdded.indexWhere(
-                  (element) => element.teamName == data[0].teamName,
+                  (element) => element.team.teamName == data[0].team.teamName,
                 )]
                     .members
                     .isEmpty) {
               membersAdded[membersAdded.indexWhere(
-                (element) => element.teamName == data[0].teamName,
+                (element) => element.team.teamName == data[0].team.teamName,
               )]
                   .members
-                  .add(member(
-                      img: pickedFile != null ? pickedFile!.path : '',
+                  .add(MemberModel(
+                      img: '',
+                      // img: pickedFile != null ? pickedFile!.path : '',
                       id: 0,
                       name: memberName.text.trim(),
                       image: '',
@@ -358,8 +425,9 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
               EasyLoading.showToast('can not add more members in this team',
                   dismissOnTap: true);
             }
-            pickedFile = null;
-            setState(() {});
+            setState(() {
+              isChanges = true;
+            });
           }
         },
         child: const Text(
@@ -381,7 +449,7 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
             itemCount: membersAdded.length,
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int indx) {
-              team memberDetail = membersAdded[indx];
+              OnGoingTeams memberDetail = membersAdded[indx];
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: SizedBox(
@@ -393,7 +461,57 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(memberDetail.teamName),
+                        Row(
+                          children: [
+                            Text(memberDetail.team.teamName),
+                            IconButton(
+                                onPressed: () async {
+                                  await showCupertinoDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      icon: Align(
+                                        alignment: Alignment.topRight,
+                                        child: IconButton(
+                                          onPressed: () {
+                                            Get.back();
+                                          },
+                                          icon: const Icon(
+                                            Icons.cancel,
+                                            color: Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                      actions: [
+                                        ElevatedButton(
+                                            onPressed: () async {
+                                              await deleteTeam(
+                                                  teamId:
+                                                      memberDetail.team.id ??
+                                                          0);
+                                              membersAdded.removeAt(indx);
+                                              Get.back();
+                                              setState(() {
+                                                // isChanges = true;
+                                              });
+                                            },
+                                            child: const Text('Yes')),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Get.back();
+                                            },
+                                            child: const Text('No'))
+                                      ],
+                                      content: const Text(
+                                          'Are you sure to delete the team with all the members of it?'),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ))
+                          ],
+                        ),
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.25,
                           width: isMobile
@@ -414,13 +532,14 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                                     children: [
                                       Row(
                                         children: [
-                                          if (memberDetail.members[index].img !=
+                                          if (memberDetail
+                                                  .members[index].image !=
                                               '') ...{
                                             CircleAvatar(
                                               radius: 60,
                                               backgroundImage: FileImage(File(
                                                   memberDetail
-                                                      .members[index].img)),
+                                                      .members[index].image)),
                                             ),
                                           } else
                                             Container(
@@ -431,10 +550,11 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                                                     shape: BoxShape.circle),
                                                 child: ClipOval(
                                                   child: Image.network(
-                                                    imageAddress +
-                                                        memberDetail
-                                                            .members[index]
-                                                            .image,
+                                                    '',
+                                                    // imageAddress +
+                                                    //     memberDetail
+                                                    //         .members[index]
+                                                    //         .image,
                                                     fit: BoxFit.cover,
                                                     loadingBuilder: (context,
                                                         child,
@@ -495,12 +615,25 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
                                       Align(
                                         alignment: Alignment.topRight,
                                         child: IconButton(
-                                            onPressed: () {
+                                            onPressed: () async {
+                                              if (memberDetail
+                                                      .members[index].id !=
+                                                  0) {
+                                                deleteMemberApi(
+                                                    memberId: memberDetail
+                                                        .members[index].id);
+                                              }
                                               membersAdded[indx].members.remove(
                                                   memberDetail.members[index]);
-                                              setState(() {});
+
+                                              setState(() {
+                                                // isChanges = true;
+                                              });
                                             },
-                                            icon: const Icon(Icons.delete)),
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              color: Colors.red,
+                                            )),
                                       )
                                     ],
                                   ),

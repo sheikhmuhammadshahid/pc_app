@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pc_app/constants.dart';
-import 'package:pc_app/models/Event.dart';
-import 'package:pc_app/screens/AddEvent/AddMember.dart';
+
+import '../../../constants.dart';
+import '../../../models/EventModel.dart';
+import '../../AddEvent/AddMember.dart';
 
 class EventCard extends StatelessWidget {
   final Color backgroundColor;
-  late eventss restaurant;
+  late EventModel restaurant;
   final VoidCallback onTap;
 
   EventCard({
@@ -95,7 +96,7 @@ class EventCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      restaurant.date,
+                      restaurant.date.toString().split(' ')[0],
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.montserrat(
                         fontWeight: FontWeight.w700,
@@ -121,7 +122,7 @@ class EventCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    restaurant.Tteams.toString(),
+                    restaurant.tTeams.toString(),
                     style: GoogleFonts.montserrat(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -132,7 +133,7 @@ class EventCard extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              if (restaurant.Tteams == 0)
+              if (restaurant.tTeams == 0)
                 ElevatedButton(
                     onPressed: () {
                       Get.to(AddMembersScreen(event: restaurant));

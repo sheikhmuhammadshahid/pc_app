@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pc_app/Client/ClientDetails.dart';
-import 'package:pc_app/GetConnectToServerDialogue.dart';
-import 'package:pc_app/controllers/EventsController.dart';
-
-import 'package:pc_app/screens/serverside/widgets/eventcard.dart';
-import 'package:pc_app/screens/serverside/widgets/eventlist.dart';
 import 'package:provider/provider.dart';
+
+import '../../Client/ClientDetails.dart';
+import '../../Client/Clients.dart';
+import '../../GetConnectToServerDialogue.dart';
+import '../../controllers/EventsController.dart';
+import 'widgets/eventcard.dart';
+import 'widgets/eventlist.dart';
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key});
@@ -20,8 +21,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   EventController? controller;
   @override
   void initState() {
-    // TODO: implement initState
-
     super.initState();
 
     controller = Get.find<EventController>();
@@ -35,18 +34,19 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   }
 
   TextEditingController searchController = TextEditingController();
-
+  ClientGetController clientController = Get.find<ClientGetController>();
   @override
   Widget build(BuildContext context) {
+    ClientProvider clientProvider = context.read<ClientProvider>();
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        appBar: context.watch<ClientProvider>().socket == null
+        appBar: context.watch<ClientProvider>().isConnected != 5
             ? AppBar(
-                title: const Text(
-                  'Not connected with server',
-                  style: TextStyle(color: Colors.red),
-                ),
+                automaticallyImplyLeading: false,
+                title: Text(context.watch<ClientProvider>().socket == null
+                    ? 'Disconnected'
+                    : 'Connected'),
                 actions: [
                   IconButton(
                       onPressed: () async {
@@ -235,9 +235,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                   thickness: 1,
                   color: Colors.grey,
                 ),
-                const SizedBox(
-                  height: 26,
-                ),
+                // const SizedBox(
+                //   height: 26,
+                // ),
                 SizedBox(
                     height: MediaQuery.of(context).size.height * 0.65,
                     child: const RestaurantList()),
