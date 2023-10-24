@@ -115,9 +115,9 @@ class ClientProvider extends ChangeNotifier {
     try {
       Get.find<ClientGetController>().sendMessage(OnGoingEvent(
               eventId: eventId,
-              pressedBy: '',
+              pressedBy: '-1',
               round: round ?? "",
-              questionForTeam: '',
+              questionForTeam: '-1',
               question: questions.isNotEmpty ? questions[questionNo] : null,
               questionNo: questionNo,
               totalQuestions: questions.length)
