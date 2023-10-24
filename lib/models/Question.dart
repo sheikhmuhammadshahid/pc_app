@@ -65,14 +65,14 @@ class Question {
   factory Question.fromMap(Map<String, dynamic> map) {
     return Question(
       ques: map['ques'] ?? '',
-      id: int.parse(map['id']),
+      id: map.containsKey('id') ? int.parse(map['id']) : 0,
       opt1: map['opt1'] ?? '',
       opt2: map['opt2'] ?? '',
       opt3: map['opt3'] ?? '',
       opt4: map['opt4'] ?? '',
       answer: map['answer'] ?? '',
       type: map['type'] ?? '',
-      eventId: int.parse(map['eventId'] ?? 0),
+      eventId: int.parse((map['eventId'] ?? 0).toString()),
     );
   }
 

@@ -20,12 +20,12 @@ class ClientGetController extends GetxController {
 
   connect(ip, port) async {
     try {
-      Socket socket = await Socket.connect(ip, port);
+      Socket socket = await Socket.connect(ip, 1234);
       clientProvider.addSocket(socket);
       return socket;
     } catch (e) {
-      EasyLoading.show(
-          status: 'Server is not started yet.', dismissOnTap: true);
+      print(e);
+      EasyLoading.show(status: e.toString(), dismissOnTap: true);
 
       return null;
     }
@@ -52,6 +52,7 @@ class ClientGetController extends GetxController {
 
         // Start listening for messages from the server
       }
+      EasyLoading.dismiss();
       // Get.back();
     } catch (e) {
       // Get.back();
