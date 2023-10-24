@@ -24,6 +24,7 @@ class ClientGetController extends GetxController {
       clientProvider.addSocket(socket);
       return socket;
     } catch (e) {
+      print(e);
       EasyLoading.show(
           status: 'Server is not started yet.', dismissOnTap: true);
 
