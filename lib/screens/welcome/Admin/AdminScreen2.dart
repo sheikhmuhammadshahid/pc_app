@@ -13,6 +13,7 @@ import 'package:quiz_competition_flutter/screens/serverside/components/question_
 import '../../../constants.dart';
 import '../../../models/MyMessage.dart';
 import '../../quiz/components/progress_bar.dart';
+import '../../serverside/dashboard.dart';
 import '../../serverside/widgets/que_screen.dart';
 
 class AdminScreen2 extends StatefulWidget {
@@ -51,7 +52,7 @@ class _AdminScreen2State extends State<AdminScreen2> {
                     .join(','))
             .toJson());
       });
-      Future.delayed(const Duration(seconds: 2)).then((value) {
+      Future.delayed(const Duration(seconds: 1)).then((value) {
         Get.find<ClientGetController>().sendMessage(MyMessage(
                 todo: 'eventId',
                 value: context.read<ClientProvider>().eventId.toString())
@@ -61,7 +62,7 @@ class _AdminScreen2State extends State<AdminScreen2> {
       //         todo: 'round', value: context.read<ClientProvider>().round ?? '')
       //     .toJson());
     } catch (e) {
-      EasyLoading.show(status: e.toString());
+      EasyLoading.show(status: 'when sending eventid and teams:  $e');
     }
   }
 
@@ -70,17 +71,55 @@ class _AdminScreen2State extends State<AdminScreen2> {
   @override
   Widget build(BuildContext context) {
     clientProvider = context.read<ClientProvider>();
-    return (context.watch<ClientProvider>().showQuestinos)
-        ? Stack(
-            // fit: StackFit.expand,
-            children: [
-              SvgPicture.asset("assets/icons/bg.svg",
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.fitWidth),
-              getQuestionBody(),
-            ],
-          )
-        : getConnectingScreen(clientProvider: clientProvider, context: context);
+    return Scaffold(
+        backgroundColor: Colors.white,
+        // backgroundColor=Colors.white,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              var c = Get.find<QuestionController>();
+              c.allQuestions = [];
+
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (context) {
+                  return const DashBoardScreen();
+                },
+              ));
+            },
+            icon: Container(
+              height: 40,
+              width: 80,
+              decoration: BoxDecoration(
+                color: kGrayColor,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.black,
+                size: 30,
+              ),
+            ),
+          ),
+          // Fluttter show the back button automatically
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          //actions: const [],
+        ),
+        body: (context.watch<ClientProvider>().showQuestinos)
+            ? Stack(
+                // fit: StackFit.expand,
+                children: [
+                  SvgPicture.asset("assets/icons/bg.svg",
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.fitWidth),
+                  getQuestionBody(),
+                ],
+              )
+            : Center(
+                child: getConnectingScreen(
+                    clientProvider: clientProvider, context: context),
+              ));
   }
 
   Widget getQuestionBody() {

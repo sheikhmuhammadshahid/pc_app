@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -8,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
 import 'package:quiz_competition_flutter/EventController.dart';
-
 import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
 // import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 // import 'package:serverpod_flutter/serverpod_flutter.dart';
 
-import 'models/MyMessage.dart';
 import 'screens/welcome/welcome_screen.dart';
 
 void main() async {
@@ -59,7 +55,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
+    // WidgetsBinding.instance.addObserver(this);
     // connectConnection();
   }
 
@@ -71,36 +67,36 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    try {
-      if (state == AppLifecycleState.detached) {
-        // The app is going into the background or is being killed
-        // sendMessage();
+    // try {
+    //   if (state == AppLifecycleState.detached) {
+    //     // The app is going into the background or is being killed
+    //     // sendMessage();
 
-        Get.find<ClientGetController>().sendMessage(MyMessage(
-                todo: 'disconnected',
-                value: Get.find<ClientGetController>()
-                    .nameController
-                    .value
-                    .text
-                    .trim())
-            .toJson());
-      } else if (state == AppLifecycleState.resumed) {
-        if (Get.find<ClientGetController>()
-            .nameController
-            .value
-            .text
-            .isNotEmpty) {
-          Get.find<ClientGetController>().sendMessage(MyMessage(
-                  todo: 'connected',
-                  value: Get.find<ClientGetController>()
-                      .nameController
-                      .value
-                      .text
-                      .trim())
-              .toJson());
-        }
-      }
-    } catch (e) {}
+    //     Get.find<ClientGetController>().sendMessage(MyMessage(
+    //             todo: 'disconnected',
+    //             value: Get.find<ClientGetController>()
+    //                 .nameController
+    //                 .value
+    //                 .text
+    //                 .trim())
+    //         .toJson());
+    //   } else if (state == AppLifecycleState.resumed) {
+    //     if (Get.find<ClientGetController>()
+    //         .nameController
+    //         .value
+    //         .text
+    //         .isNotEmpty) {
+    //       Get.find<ClientGetController>().sendMessage(MyMessage(
+    //               todo: 'connected',
+    //               value: Get.find<ClientGetController>()
+    //                   .nameController
+    //                   .value
+    //                   .text
+    //                   .trim())
+    //           .toJson());
+    //     }
+    //   }
+    // } catch (e) {}
   }
 
   @override

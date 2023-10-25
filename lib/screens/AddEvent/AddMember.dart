@@ -413,8 +413,8 @@ class _AddMembersScreenState extends State<AddMembersScreen> {
               )]
                   .members
                   .add(MemberModel(
-                      img: '',
-                      // img: pickedFile != null ? pickedFile!.path : '',
+                      // img: '',
+                      img: pickedFile != null ? pickedFile!.path : '',
                       id: 0,
                       name: memberName.text.trim(),
                       image: '',

@@ -22,7 +22,6 @@ import '../../../controllers/question_controller.dart';
 import '../../../models/MyMessage.dart';
 import '../../AddEvent/AddEvent.dart';
 import '../../AddEvent/AddMember.dart';
-import '../../welcome/Admin/AdminScreen.dart';
 import 'eventcard.dart';
 import 'que_screen.dart';
 

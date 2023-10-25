@@ -94,9 +94,12 @@ class QuestionController extends GetxController
     if (animationController != null) {
       animationController!.stop();
     }
+
     update();
+    round = question.type.toLowerCase();
     if (_correctAns == _selectedAns) {
       playCorrectSong();
+
       if (round == 'rapid') {
         teamController.ongoingTeams[eventController.team].team.rapidRound =
             teamController.ongoingTeams[eventController.team].team.rapidRound +
@@ -126,13 +129,13 @@ class QuestionController extends GetxController
     // });
   }
 
-  playWrongSong() {
+  playWrongSong() async {
     //_assetsAudioPlayer.open(Audio("assets/icons/Songs/Wrong.wav"));
-    _assetsAudioPlayer.play(AssetSource('icons/Songs/Wrong.wav'));
+    await _assetsAudioPlayer.play(AssetSource('icons/Songs/wrong.wav'));
   }
 
-  playCorrectSong() {
-    _assetsAudioPlayer.play(
+  playCorrectSong() async {
+    await _assetsAudioPlayer.play(
       AssetSource('icons/Songs/correct.wav'),
       //volume: 100
     );
@@ -140,14 +143,24 @@ class QuestionController extends GetxController
     // _assetsAudioPlayer.play();
   }
 
-  playBuzzer() {}
-  playBuzzerPressed() {
+  playBuzzer() async {
+    await _assetsAudioPlayer.play(
+      AssetSource('icons/Songs/buzzer.wav'),
+      //volume: 100
+    );
+  }
+
+  playBuzzerPressed() async {
+    await _assetsAudioPlayer.play(
+      AssetSource('icons/Songs/buzzerPressed.wav'),
+      //volume: 100
+    );
     // _assetsAudioPlayer.open(Audio("assets/icons/Songs/BuzzerPressed.wav"));
     // _assetsAudioPlayer.play();
   }
 
-  playTimerSound() {
-    _assetsAudioPlayer.play(AssetSource("icons/Songs/countDown.wav"));
+  playTimerSound() async {
+    await _assetsAudioPlayer.play(AssetSource("icons/Songs/countDown.wav"));
   }
 
   var eventController = Get.put(EventController());

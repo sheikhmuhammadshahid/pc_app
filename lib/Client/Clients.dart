@@ -4,11 +4,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
+import 'package:quiz_competition_flutter/controllers/question_controller.dart';
 import 'package:quiz_competition_flutter/models/OnGoingEventModel.dart';
+import 'package:quiz_competition_flutter/models/TeamConnected.dart';
 import 'package:quiz_competition_flutter/screens/quiz/quiz_screen.dart';
 
 import '../models/MyMessage.dart';
 import '../screens/serverside/dashboard.dart';
+import '../screens/serverside/widgets/que_screen.dart';
 import 'ClientDetails.dart';
 
 class ClientGetController extends GetxController {
@@ -80,64 +84,88 @@ class ClientGetController extends GetxController {
     return 0;
   }
 
+  checkMessage(data) async {
+    try {
+      String message = String.fromCharCodes(data).trim();
+      print('Received from server: $message');
+      int res = isMyMessage(jsonDecode(message));
+      print(res);
+      if (res == 1) {
+        Map<String, dynamic> map = jsonDecode(message);
+        if (map['todo'] == "Teamsconnected") {
+          List<String> teams = map['value'].toString().split(',').toList();
+          for (var element in teams) {
+            clientProvider.addConnectedTeam(teamName: element);
+          }
+        } else if (map['todo'] == 'hide') {
+          clientProvider.changeHiddenState(
+              toHide: bool.tryParse(map['value']) ?? false);
+        } else if (map['todo'] == 'answer') {
+          Get.find<QuestionController>()
+              .checkAns(clientProvider.ongoinQuestion!.question!, map['value']);
+        } else if (map['todo'] == 'eventId') {
+          clientProvider.eventId = int.parse(map['value']);
+          if (nameController.value.text.trim() != 'admin') {
+            clientProvider.getTeamDetail();
+          }
+        } else if (map['todo'] == 'buzzer') {
+          clientProvider.changePressedBy(name: map['value']);
+
+          if (nameController.value.text.trim() == 'admin' &&
+              map['value'] != '-1') {
+            Get.find<QuestionController>().playBuzzerPressed();
+          }
+        } else if (map['todo'] == 'issue') {
+          EasyLoading.show(status: map['value'], dismissOnTap: true);
+        } else if (map['todo'] == 'connected' ||
+            map['todo'] == 'disconnected') {
+          EasyLoading.dismiss();
+          //EasyLoading.showToast(v.value, dismissOnTap: true);
+          clientProvider.addConnectedTeam(
+              teamName: map['value'], toAdd: map['todo'] == 'connected');
+          if (map['todo'] == 'connected') {
+            if (Get.find<ClientGetController>().nameController.value.text ==
+                    'admin' &&
+                map['value'] == 'admin') {
+              Get.offAll(const DashBoardScreen());
+            } else if (Get.find<ClientGetController>()
+                        .nameController
+                        .value
+                        .text ==
+                    'admin1' &&
+                map['value'] == 'admin1') {
+              Get.to(ServerQuizScreen(''));
+            } else if (Get.find<ClientGetController>()
+                    .nameController
+                    .value
+                    .text ==
+                map['value']) {
+              Get.to(const QuizScreen());
+            }
+          }
+        }
+      } else if (res == 2) {
+        try {
+          // Map<String, dynamic> map = jsonDecode(message);
+          OnGoingEvent ques = OnGoingEvent.fromJson(message);
+          clientProvider.updateOnGoingQUestion(ques);
+        } catch (e) {
+          print('-------------------issueee---------------');
+          print(e);
+        }
+      }
+    } catch (e) {}
+  }
+
   handleMessages() async {
     try {
       clientProvider.socket!.listen(
         (data) {
-          String message = String.fromCharCodes(data).trim();
-          print('Received from server: $message');
-          int res = isMyMessage(jsonDecode(message));
-          print(res);
-          if (res == 1) {
-            Map<String, dynamic> map = jsonDecode(message);
-
-            if (map['todo'] == 'hide') {
-              clientProvider.changeHiddenState(
-                  toHide: bool.tryParse(map['value']) ?? false);
-            }
-            if (map['todo'] == 'issue') {
-              EasyLoading.show(status: map['value'], dismissOnTap: true);
-            }
-            if (map['todo'] == 'connected' || map['todo'] == 'disconnected') {
-              EasyLoading.dismiss();
-              //EasyLoading.showToast(v.value, dismissOnTap: true);
-              clientProvider.addConnectedTeam(
-                  teamName: map['value'], toAdd: map['todo'] == 'connected');
-              if (map['todo'] == 'connected') {
-                if (Get.find<ClientGetController>().nameController.value.text ==
-                        'admin' &&
-                    map['value'] == 'admin') {
-                  Get.offAll(const DashBoardScreen());
-                } else if (Get.find<ClientGetController>()
-                            .nameController
-                            .value
-                            .text ==
-                        'admin1' &&
-                    map['value'] == 'admin1') {
-                  Get.to(const QuizScreen());
-                } else if (Get.find<ClientGetController>()
-                        .nameController
-                        .value
-                        .text ==
-                    map['value']) {
-                  Get.to(const QuizScreen());
-                }
-              }
-            }
-          } else if (res == 2) {
-            try {
-              // Map<String, dynamic> map = jsonDecode(message);
-              OnGoingEvent ques = OnGoingEvent.fromJson(message);
-              clientProvider.updateOnGoingQUestion(ques);
-            } catch (e) {
-              print('-------------------issueee---------------');
-              print(e);
-            }
-          }
+          checkMessage(data);
         },
         onError: (error) {
           print('Error: $error');
-          clientProvider.removeSocket();
+          // clientProvider.removeSocket();
         },
         onDone: () {
           print('Disconnected from the server.');

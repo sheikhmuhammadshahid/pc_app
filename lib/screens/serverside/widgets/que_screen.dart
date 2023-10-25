@@ -8,6 +8,7 @@ import '../../../Client/Clients.dart';
 import '../../../constants.dart';
 import '../../../controllers/TeamsController.dart';
 import '../../../controllers/question_controller.dart';
+import '../../quiz/components/question_card.dart';
 import '../components/body.dart';
 import '../dashboard.dart';
 
@@ -24,19 +25,11 @@ class _ServerQuizScreenState extends State<ServerQuizScreen> {
   @override
   void initState() {
     super.initState();
-    getqus();
+    // getqus();
     // getTeamDetails();
   }
 
   QuestionController controller = Get.find<QuestionController>();
-  getqus() async {
-    // controller.allQuestions = [];
-    // await controller.getQuestions(widget.round, context: context);
-
-    // setState(() {
-    //   isLoading = false;
-    // });
-  }
 
   bool isLoading = true;
   late ClientProvider clientProvider;
@@ -44,47 +37,54 @@ class _ServerQuizScreenState extends State<ServerQuizScreen> {
   Widget build(BuildContext context) {
     clientProvider = context.read<ClientProvider>();
     return Scaffold(
-        backgroundColor: Colors.white,
-        // backgroundColor=Colors.white,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          leading: IconButton(
-            onPressed: () {
-              var c = Get.find<QuestionController>();
-              c.allQuestions = [];
-
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) {
-                  return const DashBoardScreen();
-                },
-              ));
-            },
-            icon: Container(
-              height: 40,
-              width: 80,
-              decoration: BoxDecoration(
-                color: kGrayColor,
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.black,
-                size: 30,
-              ),
-            ),
-          ),
-          // Fluttter show the back button automatically
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          //actions: const [],
-        ),
-        body: (context.watch<ClientProvider>().showQuestinos)
-            ? Body(
-                round: widget.round,
-              )
-            : Center(
-                child: getConnectingScreen(
-                    clientProvider: clientProvider, context: context)));
+      body: !(context.watch<ClientProvider>().showQuestinos)
+          ? getConnectingScreen(
+              context: context, clientProvider: clientProvider)
+          : context.watch<ClientProvider>().isHidden
+              ? const Center(
+                  child: Text('Event is pauesed by the admin',
+                      style: TextStyle(color: Colors.white)),
+                )
+              : (context.watch<ClientProvider>().ongoinQuestion != null)
+                  ? context.watch<ClientProvider>().ongoinQuestion!.question !=
+                          null
+                      ? Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: kDefaultPadding),
+                              child: Text.rich(
+                                TextSpan(
+                                  text:
+                                      "Question ${context.watch<ClientProvider>().questionNo + 1}",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .copyWith(color: kSecondaryColor),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          "/${context.watch<ClientProvider>().questions.length}",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall!
+                                          .copyWith(color: kSecondaryColor),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            QuestionCard(
+                                question:
+                                    clientProvider.ongoinQuestion!.question)
+                          ],
+                        )
+                      : const Text('No questions found')
+                  : const Text('Questions will be shown here'),
+    );
   }
 }
 
@@ -182,8 +182,54 @@ Widget getConnectingScreen(
                   shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   itemCount:
-                      context.watch<ClientProvider>().ongoingTeams.length,
+                      context.watch<ClientProvider>().ongoingTeams.length + 2,
                   itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor:
+                              context.watch<ClientProvider>().adminConnected
+                                  ? Colors.green
+                                  : Colors.red,
+                          child: const FittedBox(
+                            fit: BoxFit.contain,
+                            child: Text(
+                              "Admin",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 23,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    if (index == 1) {
+                      return Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: CircleAvatar(
+                          radius: 60,
+                          backgroundColor:
+                              context.watch<ClientProvider>().admin1Connected
+                                  ? Colors.green
+                                  : Colors.red,
+                          child: const FittedBox(
+                            fit: BoxFit.contain,
+                            child: Text(
+                              "Projector",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 23,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                     return Padding(
                       padding: const EdgeInsets.all(15),
                       child: CircleAvatar(
@@ -194,13 +240,13 @@ Widget getConnectingScreen(
                                 .any((element) =>
                                     element ==
                                     clientProvider
-                                        .ongoingTeams[index].team.teamName)
+                                        .ongoingTeams[index - 2].team.teamName)
                             ? Colors.green
                             : Colors.red,
                         child: FittedBox(
                           fit: BoxFit.contain,
                           child: Text(
-                            " ${clientProvider.ongoingTeams[index].team.teamName} ",
+                            " ${clientProvider.ongoingTeams[index - 2].team.teamName} ",
                             style: const TextStyle(
                               color: Colors.black,
                               fontSize: 23,

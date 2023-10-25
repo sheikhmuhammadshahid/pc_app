@@ -6,7 +6,6 @@ import 'package:quiz_competition_flutter/Client/Clients.dart';
 import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
-import 'package:quiz_competition_flutter/main.dart';
 
 import '../models/OnGoingEventModel.dart';
 import '../models/OnGoingTeamsModel.dart';
@@ -21,6 +20,9 @@ class ClientProvider extends ChangeNotifier {
   Animation get animation => _animation!;
   int eventId = -1;
   String? round;
+  String pressedBy = '-1';
+  bool adminConnected = true;
+  bool admin1Connected = false;
   String correctAnswer = '';
   String selectedAnswer = '';
   List<String> connecteds = [];
@@ -28,6 +30,11 @@ class ClientProvider extends ChangeNotifier {
   int questionNo = 0;
   List<Question> allQuestions = [];
   bool isHidden = false;
+  changePressedBy({required String name}) {
+    pressedBy = name;
+    notifyListeners();
+  }
+
   changeHiddenState({bool toHide = false}) {
     try {
       isHidden = toHide;
@@ -138,6 +145,7 @@ class ClientProvider extends ChangeNotifier {
 
   updateOnGoingQUestion(OnGoingEvent onGoingEvent) {
     ongoinQuestion = onGoingEvent;
+    pressedBy = '-1';
     notifyListeners();
   }
 
@@ -166,22 +174,35 @@ class ClientProvider extends ChangeNotifier {
   }
 
   addConnectedTeam({required String teamName, bool toAdd = true}) {
-    if (toAdd) {
-      if (!connecteds.contains(teamName)) {
-        connectedTeams++;
-        connecteds.add(teamName);
+    if (teamName.toLowerCase() != 'admin' &&
+        teamName.toLowerCase() != 'admin1') {
+      if (toAdd) {
+        if (!connecteds.contains(teamName)) {
+          connectedTeams++;
+          connecteds.add(teamName);
+        }
+      } else {
+        if (connecteds.remove(teamName)) {
+          connectedTeams--;
+        }
       }
-    } else {
-      if (connecteds.remove(teamName)) {
-        connectedTeams--;
+      if (connectedTeams == ongoingTeams.length) {
+        showQuestinos = true;
+      } else {
+        showQuestinos = false;
       }
-    }
-    if (connectedTeams == ongoingTeams.length) {
-      showQuestinos = true;
+      notifyListeners();
     } else {
-      showQuestinos = false;
+      if (teamName.toLowerCase() == 'admin') {
+        adminConnected = toAdd;
+      } else {
+        admin1Connected = toAdd;
+      }
+      if (!admin1Connected || !adminConnected) {
+        showQuestinos = false;
+      }
+      notifyListeners();
     }
-    notifyListeners();
   }
 
   List<OnGoingTeams> ongoingTeams = [];
