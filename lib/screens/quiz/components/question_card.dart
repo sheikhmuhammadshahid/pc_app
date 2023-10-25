@@ -79,33 +79,37 @@ class QuestionCard extends StatelessWidget {
       ),
       const SizedBox(height: kDefaultPadding / 2),
       if (clientProvider.ongoinQuestion!.round != 'rapid') ...{
-        Option(
-          index: 0,
-          text: question!.opt1,
-          press: () {
-            checkAnswer(question!.opt1);
-          },
-        ),
-        Option(
-          index: 1,
-          text: question!.opt2,
-          press: () {
-            checkAnswer(question!.opt2);
-          },
-        ),
-        Option(
-          index: 2,
-          text: question!.opt3,
-          press: () {
-            checkAnswer(question!.opt3);
-          },
-        ),
-        Option(
-          index: 3,
-          text: question!.opt4,
-          press: () {
-            checkAnswer(question!.opt4);
-          },
+        Column(
+          children: [
+            Option(
+              index: 0,
+              text: question!.opt1,
+              press: () {
+                checkAnswer(question!.opt1);
+              },
+            ),
+            Option(
+              index: 1,
+              text: question!.opt2,
+              press: () {
+                checkAnswer(question!.opt2);
+              },
+            ),
+            Option(
+              index: 2,
+              text: question!.opt3,
+              press: () {
+                checkAnswer(question!.opt3);
+              },
+            ),
+            Option(
+              index: 3,
+              text: question!.opt4,
+              press: () {
+                checkAnswer(question!.opt4);
+              },
+            )
+          ],
         )
       },
     ];

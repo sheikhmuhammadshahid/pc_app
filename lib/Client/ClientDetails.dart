@@ -69,15 +69,7 @@ class ClientProvider extends ChangeNotifier {
     print('---------round------');
     print('questions: ${questions.length} ');
     try {
-      Get.find<ClientGetController>().sendMessage(OnGoingEvent(
-              eventId: eventId,
-              pressedBy: '',
-              questionForTeam: '',
-              question: questions.isEmpty ? null : questions[questionNo],
-              round: round ?? '',
-              questionNo: questionNo,
-              totalQuestions: questions.length)
-          .toJson());
+      sendMessage();
     } catch (e) {}
     notifyListeners();
   }
@@ -110,6 +102,7 @@ class ClientProvider extends ChangeNotifier {
     try {
       if (questionNo > 0) {
         questionNo--;
+        updateTheQnNum();
         await sendMessage();
         await pageController.previousPage(
             duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
@@ -124,7 +117,7 @@ class ClientProvider extends ChangeNotifier {
               eventId: eventId,
               pressedBy: '-1',
               round: round ?? "",
-              questionForTeam: '-1',
+              questionForTeam: Get.find<EventController>().teamName.value,
               question: questions.isNotEmpty ? questions[questionNo] : null,
               questionNo: questionNo,
               totalQuestions: questions.length)
@@ -186,8 +179,11 @@ class ClientProvider extends ChangeNotifier {
           connectedTeams--;
         }
       }
-      if (connectedTeams == ongoingTeams.length) {
+      if (connectedTeams == ongoingTeams.length &&
+          admin1Connected &&
+          adminConnected) {
         showQuestinos = true;
+        sendMessage();
       } else {
         showQuestinos = false;
       }
@@ -212,6 +208,8 @@ class ClientProvider extends ChangeNotifier {
     try {
       ongoingTeams = await getTeamsDetails(eventId: eventId);
       Get.find<TeamsController>().ongoingTeams = ongoingTeams;
+      Get.find<EventController>().teamName.value =
+          ongoingTeams[0].team.teamName;
       connectedTeams = 0;
       notifyListeners();
     } catch (e) {}
@@ -222,25 +220,25 @@ class ClientProvider extends ChangeNotifier {
   updateTheQnNum() async {
     print('checikg0===========');
     if (round == 'mcq') {
-      eventController.teamName.value = teamsController
-          .ongoingTeams[eventController.team].team.teamName
-          .toString();
       if (eventController.onGoingEvent!.tTeams - 1 > eventController.team) {
         eventController.team++;
       } else {
         eventController.team = 0;
       }
+      eventController.teamName.value = teamsController
+          .ongoingTeams[eventController.team].team.teamName
+          .toString();
     } else if (round == 'rapid') {
       print('checikg===========$questionNo');
-      // if (questionNo <= 2) {
-      //   eventController.team = 0;
-      //   eventController.teamName.value =
-      //       ongoingTeams[0].team.teamName.toString();
-      // }
-      if (questionNo == 2) {
+      if (questionNo < questions.length / 2) {
+        eventController.team = 0;
+        eventController.teamName.value =
+            ongoingTeams[0].team.teamName.toString();
+      }
+      if (questionNo == (questions.length / 2)) {
         print('checikg3===========$questionNo');
-        eventController.team++;
-        Get.find<QuestionController>().animationController!.stop();
+        eventController.team = 1;
+        // Get.find<QuestionController>().animationController!.stop();
         await Get.defaultDialog(
             confirm: ElevatedButton(
                 onPressed: () {
@@ -248,8 +246,8 @@ class ClientProvider extends ChangeNotifier {
                 },
                 child: const Text('Ok')),
             content: const Text('Press ok to continue for next team'));
-        Get.find<QuestionController>().animationController!.reset();
-        Get.find<QuestionController>().animationController!.repeat();
+        // Get.find<QuestionController>().animationController!.reset();
+        // Get.find<QuestionController>().animationController!.repeat();
         eventController.teamName.value =
             ongoingTeams[1].team.teamName.toString();
       }

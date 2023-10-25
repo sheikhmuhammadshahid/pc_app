@@ -48,39 +48,61 @@ class _ServerQuizScreenState extends State<ServerQuizScreen> {
               : (context.watch<ClientProvider>().ongoinQuestion != null)
                   ? context.watch<ClientProvider>().ongoinQuestion!.question !=
                           null
-                      ? Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: kDefaultPadding),
-                              child: Text.rich(
-                                TextSpan(
-                                  text:
-                                      "Question ${context.watch<ClientProvider>().questionNo + 1}",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium!
-                                      .copyWith(color: kSecondaryColor),
-                                  children: [
-                                    TextSpan(
-                                      text:
-                                          "/${context.watch<ClientProvider>().questions.length}",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineSmall!
-                                          .copyWith(color: kSecondaryColor),
-                                    ),
-                                  ],
-                                ),
+                      ? SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: kDefaultPadding),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Text.rich(
+                                        TextSpan(
+                                          text:
+                                              "Question ${context.watch<ClientProvider>().questionNo + 1}",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineMedium!
+                                              .copyWith(color: kSecondaryColor),
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  "/${context.watch<ClientProvider>().questions.length}",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall!
+                                                  .copyWith(
+                                                      color: kSecondaryColor),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      CircleAvatar(
+                                        radius: 50,
+                                        backgroundColor: Colors.teal,
+                                        child: FittedBox(
+                                          child: Text(clientProvider.round ==
+                                                  'buzzer'
+                                              ? clientProvider.pressedBy == '-1'
+                                                  ? ''
+                                                  : clientProvider.pressedBy
+                                              : clientProvider.ongoinQuestion!
+                                                  .questionForTeam),
+                                        ),
+                                      )
+                                    ],
+                                  )),
+                              const SizedBox(
+                                height: 5,
                               ),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            QuestionCard(
-                                question:
-                                    clientProvider.ongoinQuestion!.question)
-                          ],
+                              QuestionCard(
+                                  question:
+                                      clientProvider.ongoinQuestion!.question)
+                            ],
+                          ),
                         )
                       : const Text('No questions found')
                   : const Text('Questions will be shown here'),

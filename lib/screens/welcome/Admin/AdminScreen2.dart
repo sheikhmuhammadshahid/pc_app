@@ -225,6 +225,7 @@ class _AdminScreen2State extends State<AdminScreen2> {
                 onChanged: (value) async {
                   clientProvider.round = value;
 
+                  clientProvider.pressedBy = '-1';
                   await clientProvider.getQuestions();
                   // setState(() {});
                 },
