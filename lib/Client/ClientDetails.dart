@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
+import 'package:quiz_competition_flutter/constant.dart';
 import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
@@ -32,12 +33,21 @@ class ClientProvider extends ChangeNotifier {
   bool isHidden = false;
   changePressedBy({required String name}) {
     pressedBy = name;
+    Get.find<QuestionController>().pressedBy = name;
     notifyListeners();
   }
 
   changeHiddenState({bool toHide = false}) {
     try {
       isHidden = toHide;
+      notifyListeners();
+    } catch (e) {}
+  }
+
+  bool isResultShowing = false;
+  changeResultScreenState({bool toHide = false}) {
+    try {
+      isResultShowing = toHide;
       notifyListeners();
     } catch (e) {}
   }
@@ -138,7 +148,14 @@ class ClientProvider extends ChangeNotifier {
 
   updateOnGoingQUestion(OnGoingEvent onGoingEvent) {
     ongoinQuestion = onGoingEvent;
+    Get.find<QuestionController>().ongoinQuestion = ongoinQuestion;
+    Get.find<QuestionController>().round = ongoinQuestion!.round;
+
     pressedBy = '-1';
+    Get.find<QuestionController>().pressedBy = '-1';
+    Get.find<EventController>().teamName.value = onGoingEvent.questionForTeam;
+    Get.find<QuestionController>().isAnswered.value = false;
+
     notifyListeners();
   }
 

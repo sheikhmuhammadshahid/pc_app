@@ -28,6 +28,7 @@ class QuestionCard extends StatelessWidget {
     controller = Get.find<QuestionController>();
     clientProvider = context.read<ClientProvider>();
     return Container(
+      height: context.isPhone ? null : context.height * 0.8,
       margin: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
       padding: const EdgeInsets.all(kDefaultPadding),
       decoration: BoxDecoration(
@@ -60,6 +61,11 @@ class QuestionCard extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.only(top: kDefaultPadding),
               padding: const EdgeInsets.all(kDefaultPadding * 0.9),
+              width: context.isPhone
+                  ? context.width
+                  : clientProvider.round != 'rapid'
+                      ? MediaQuery.of(context).size.width * .45
+                      : MediaQuery.of(context).size.width * .6,
               decoration: BoxDecoration(
                 color: QBColor.value,
                 border:
@@ -77,53 +83,70 @@ class QuestionCard extends StatelessWidget {
           );
         },
       ),
-      const SizedBox(height: kDefaultPadding / 2),
+      const SizedBox(
+        height: kDefaultPadding / 2,
+        width: kDefaultPadding / 2,
+      ),
       if (clientProvider.ongoinQuestion!.round != 'rapid') ...{
-        Column(
-          children: [
-            Option(
-              index: 0,
-              text: question!.opt1,
-              press: () {
-                checkAnswer(question!.opt1);
-              },
-            ),
-            Option(
-              index: 1,
-              text: question!.opt2,
-              press: () {
-                checkAnswer(question!.opt2);
-              },
-            ),
-            Option(
-              index: 2,
-              text: question!.opt3,
-              press: () {
-                checkAnswer(question!.opt3);
-              },
-            ),
-            Option(
-              index: 3,
-              text: question!.opt4,
-              press: () {
-                checkAnswer(question!.opt4);
-              },
-            )
-          ],
+        SizedBox(
+          width: context.isPhone ? context.width : context.width * .45,
+          child: Column(
+            children: [
+              Option(
+                index: 0,
+                text: question!.opt1,
+                press: () {
+                  checkAnswer(question!.opt1);
+                },
+              ),
+              Option(
+                index: 1,
+                text: question!.opt2,
+                press: () {
+                  checkAnswer(question!.opt2);
+                },
+              ),
+              Option(
+                index: 2,
+                text: question!.opt3,
+                press: () {
+                  checkAnswer(question!.opt3);
+                },
+              ),
+              Option(
+                index: 3,
+                text: question!.opt4,
+                press: () {
+                  checkAnswer(question!.opt4);
+                },
+              )
+            ],
+          ),
         )
-      },
+      }
     ];
   }
 
   checkAnswer(option) async {
     try {
       if (clientController.nameController.value.text != 'admin1') {
-        if (clientProvider.ongoinQuestion!.question!.type.toLowerCase() !=
-                'buzzer' ||
-            (clientProvider.ongoinQuestion!.question!.type.toLowerCase() !=
+        if ((clientProvider.ongoinQuestion!.question!.type.toLowerCase() !=
+                    'buzzer' &&
+                clientProvider.ongoinQuestion!.questionForTeam
+                        .toLowerCase()
+                        .trim() ==
+                    clientController.nameController.value.text
+                        .toLowerCase()
+                        .trim()) ||
+            (clientProvider.ongoinQuestion!.question!.type.toLowerCase() ==
                     'buzzer' &&
                 clientProvider.pressedBy ==
                     clientController.nameController.value.text)) {
+          try {
+            if (clientProvider.ongoinQuestion!.round == 'buzzer') {
+              quesController.animationController!.stop();
+            }
+          } catch (e) {}
           if (!controller.isAnswered.value) {
             // clientController
             //     .sendMessage("#1#${quesController.questionNumber.value}");

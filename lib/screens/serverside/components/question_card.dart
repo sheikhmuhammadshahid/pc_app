@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:quiz_competition_flutter/Client/Clients.dart';
+import 'package:quiz_competition_flutter/models/MyMessage.dart';
 
 import '../../../Client/ClientDetails.dart';
 import '../../../constants.dart';
@@ -110,6 +112,34 @@ class QuestionCard extends StatelessWidget {
                   ],
                 ),
               )
+            else ...{
+              Container(
+                width: MediaQuery.of(context).size.width * .35,
+                margin: const EdgeInsets.only(top: kDefaultPadding),
+                padding: const EdgeInsets.all(kDefaultPadding / 3.6),
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          Get.find<ClientGetController>().sendMessage(
+                              MyMessage(todo: 'RapidAnswer', value: 'correct')
+                                  .toJson());
+                        },
+                        child: const Text('Correct')),
+                    const SizedBox(
+                      height: 25,
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          Get.find<ClientGetController>().sendMessage(
+                              MyMessage(todo: 'RapidAnswer', value: 'wrong')
+                                  .toJson());
+                        },
+                        child: const Text('Wrong'))
+                  ],
+                ),
+              )
+            }
           ],
         ),
       ),

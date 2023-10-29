@@ -2,16 +2,19 @@ import 'dart:math';
 
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get_utils/get_utils.dart';
+import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
+import 'package:quiz_competition_flutter/models/TeamModel.dart';
 
 import '../../constants.dart';
 
 class ResultScreen extends StatefulWidget {
-  final int score;
+  final String round;
 
-  const ResultScreen({Key? key, required this.score}) : super(key: key);
+  const ResultScreen({Key? key, required this.round}) : super(key: key);
 
   @override
   State<ResultScreen> createState() => _ResultScreenState();
@@ -43,7 +46,6 @@ Path drawStar(Size size) {
 
 class _ResultScreenState extends State<ResultScreen>
     with TickerProviderStateMixin {
-  late double correctNumber;
   bool isPlaying = false;
   late ConfettiController _controllerTopCenter;
   late AnimationController _controller;
@@ -56,40 +58,53 @@ class _ResultScreenState extends State<ResultScreen>
     super.dispose();
   }
 
-  final _rows = <PlutoRow>[
-    PlutoRow(
-      cells: {
-        '1': PlutoCell(value: 'MCQS'),
-        '2': PlutoCell(value: "1"),
-        '3': PlutoCell(value: '2'),
-        '4': PlutoCell(value: '3'),
-      },
-    ),
-    PlutoRow(
-      cells: {
-        '1': PlutoCell(value: 'Rapid'),
-        '2': PlutoCell(value: "1"),
-        '3': PlutoCell(value: '2'),
-        '4': PlutoCell(value: '3'),
-      },
-    ),
-    PlutoRow(
-      cells: {
-        '1': PlutoCell(value: 'Buzzer'),
-        '2': PlutoCell(value: "1"),
-        '3': PlutoCell(value: '2'),
-        '4': PlutoCell(value: '3'),
-      },
-    ),
-    PlutoRow(
-      cells: {
-        '1': PlutoCell(value: 'Total'),
-        '2': PlutoCell(value: "1"),
-        '3': PlutoCell(value: '2'),
-        '4': PlutoCell(value: '3'),
-      },
-    )
-  ];
+  List<PlutoRow> getRows({required int teamIndex}) {
+    TeamModel team = teamController.ongoingTeams[teamIndex].team;
+    teamController.ongoingTeams[teamIndex].team.scores =
+        ((team.mcqRound + team.rapidRound + team.buzzerRound) -
+            (team.buzzerWrong * 2));
+    return [
+      PlutoRow(
+        cells: {
+          '1': PlutoCell(value: 'MCQS'),
+          '2': PlutoCell(value: team.mcqRound.toString()),
+          '3': PlutoCell(value: '-'),
+          '4': PlutoCell(value: team.mcqRound.toString()),
+        },
+      ),
+      PlutoRow(
+        cells: {
+          '1': PlutoCell(value: 'Rapid'),
+          '2': PlutoCell(value: team.rapidRound.toString()),
+          '3': PlutoCell(value: '-'),
+          '4': PlutoCell(value: team.rapidRound.toString()),
+        },
+      ),
+      PlutoRow(
+        cells: {
+          '1': PlutoCell(value: 'Buzzer'),
+          '2': PlutoCell(value: team.buzzerRound.toString()),
+          '3': PlutoCell(value: '${team.buzzerWrong} x 2'),
+          '4': PlutoCell(
+              value: (team.buzzerRound - (team.buzzerWrong * 2)).toString()),
+        },
+      ),
+      PlutoRow(
+        cells: {
+          '1': PlutoCell(value: 'Total'),
+          '2': PlutoCell(
+              value: (team.mcqRound + team.rapidRound + team.buzzerRound)
+                  .toString()),
+          '3': PlutoCell(value: (team.buzzerWrong * 2).toString()),
+          '4': PlutoCell(
+              value: ((team.mcqRound + team.rapidRound + team.buzzerRound) -
+                      (team.buzzerWrong * 2))
+                  .toString()),
+        },
+      )
+    ];
+  }
+
   final _columns = [
     PlutoColumn(
         enableColumnDrag: false,
@@ -121,7 +136,6 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   void initState() {
     super.initState();
-    correctNumber = widget.score / 10;
     _controllerTopCenter =
         ConfettiController(duration: const Duration(seconds: 5));
     _controller = AnimationController(
@@ -152,10 +166,24 @@ class _ResultScreenState extends State<ResultScreen>
     _controller.forward();
   }
 
+  int winner = -1;
+  checkResult() {
+    teamController.ongoingTeams.sort();
+
+    if (teamController.ongoingTeams.isNotEmpty) {
+      winner = teamController.ongoingTeams
+          .where((element) =>
+              element.team.scores == teamController.ongoingTeams[0].team.scores)
+          .toList()
+          .length;
+    } else {
+      winner = -1;
+    }
+  }
+
+  TeamsController teamController = Get.find<TeamsController>();
   @override
   Widget build(BuildContext context) {
-    int correctNumberInt = correctNumber.toInt();
-
     setState(() {
       _controllerTopCenter.play();
     });
@@ -168,16 +196,23 @@ class _ResultScreenState extends State<ResultScreen>
           Padding(
             padding: const EdgeInsets.all(10),
             child: GridView.builder(
-              itemCount: 3,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              itemCount: teamController.ongoingTeams.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 20,
-                childAspectRatio: 4.2 / 1.9,
-                crossAxisCount: 2,
+                // childAspectRatio: 4.2 / 1.9,
+                crossAxisCount: context.isPhone ? 1 : 2,
               ),
               itemBuilder: (context, index) {
                 return Stack(
                   children: [
+                    Align(
+                        alignment: Alignment.topCenter,
+                        child: Text(
+                          teamController.ongoingTeams[index].team.teamName,
+                          style:
+                              const TextStyle(color: Colors.blue, fontSize: 30),
+                        )),
                     Card(
                       color: careem,
                       child: Center(
@@ -214,7 +249,7 @@ class _ResultScreenState extends State<ResultScreen>
                             onLoaded: (PlutoGridOnLoadedEvent event) {},
                             noRowsWidget: const Center(
                               child: Text(
-                                'Scores will be!',
+                                'Scores will be show here!',
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,
@@ -223,7 +258,7 @@ class _ResultScreenState extends State<ResultScreen>
                               ),
                             ),
                             columns: _columns,
-                            rows: _rows,
+                            rows: getRows(teamIndex: index),
                           ),
                         ),
                       ),
@@ -233,273 +268,172 @@ class _ResultScreenState extends State<ResultScreen>
               },
             ),
           ),
-          SingleChildScrollView(
-            child: SlideTransition(
+          if (widget.round == 'buzzer') ...{
+            SlideTransition(
               position: _offsetAnimation2,
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * .65,
-                height: context.height * 0.9,
-                child: Column(
-                  children: [
-                    const FittedBox(
-                      fit: BoxFit.fill,
-                      child: Text(
-                        "Congratulations!",
-                        style: TextStyle(
-                            fontSize: 40,
-                            color: Color(0xffFFBA07),
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: (0.05)),
-                      child: CircleAvatar(
-                        backgroundColor: const Color(0xff5A88B0),
-                        radius: 120,
-                        child: Image.asset("assets/icons/kupa.png"),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 15),
-                      child: FittedBox(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      FittedBox(
+                        fit: BoxFit.fill,
                         child: Text(
-                          'Team Name'.tr,
+                          winner == -1 || winner == 1
+                              ? "Congratulations!"
+                              : 'Draw',
                           style: const TextStyle(
-                            fontSize: 40,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w900,
-                          ),
+                              fontSize: 40,
+                              color: Color(0xffFFBA07),
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
-                    ),
-                    FittedBox(
-                      fit: BoxFit.fill,
-                      child: Wrap(
-                        //mainAxisAlignment: MainAxisAlignment.center,
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Wrap(
                         children: [
-                          SlideTransition(
-                            position: _offsetAnimation,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Stack(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: CircleAvatar(
-                                      backgroundColor: const Color(0xff5A88B0),
-                                      radius: 80,
-                                      child: getImageBuilder(
-                                          'https://d2qp0siotla746.cloudfront.net/img/use-cases/profile-picture/template_0.jpg'),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(25),
-                                        color: careem,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Color.fromARGB(
-                                                255, 194, 192, 192),
-                                            blurRadius: 6.0,
-                                            spreadRadius: 2.0,
-                                            offset: Offset(0.0, 0.0),
-                                          )
-                                        ],
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: context.height * 0.75,
+                                width: 500,
+                                child: Stack(
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(top: (0.05)),
+                                      child: Lottie.asset(
+                                        'assets/winner.json',
+                                        width: 500,
                                       ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Muhammasd shahid',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: Text(
+                                        teamController.ongoingTeams.isNotEmpty
+                                            ? teamController
+                                                .ongoingTeams[0].team.teamName
+                                            : 'No Teams',
+                                        style: const TextStyle(
+                                          fontSize: 40,
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w900,
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                          SlideTransition(
-                            position: _offsetAnimation,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Stack(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: CircleAvatar(
-                                      backgroundColor: const Color(0xff5A88B0),
-                                      radius: 80,
-                                      child: getImageBuilder(
-                                          'https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg'),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(25),
-                                        color: careem,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Color.fromARGB(
-                                                255, 194, 192, 192),
-                                            blurRadius: 6.0,
-                                            spreadRadius: 2.0,
-                                            offset: Offset(0.0, 0.0),
-                                          )
-                                        ],
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Muhammasd shahid',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                          const SizedBox(
+                            height: 30,
+                            width: 30,
+                          ),
+                          SizedBox(
+                            height: context.height * 0.6,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                FittedBox(
+                                  fit: BoxFit.fill,
+                                  child: Wrap(
+                                      //mainAxisAlignment: MainAxisAlignment.center,
+                                      children: List.generate(
+                                    teamController.ongoingTeams.isNotEmpty
+                                        ? teamController
+                                            .ongoingTeams[0].members.length
+                                        : 0,
+                                    (index) => SlideTransition(
+                                      position: _offsetAnimation,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Stack(
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundColor:
+                                                  const Color(0xff5A88B0),
+                                              radius: 80,
+                                              child: getImageBuilder(
+                                                  teamController.ongoingTeams[0]
+                                                      .members[index].image),
+                                            ),
+                                            Positioned(
+                                              bottom: 0,
+                                              child: Container(
+                                                width: 150,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(25),
+                                                  color: careem,
+                                                  boxShadow: const [
+                                                    BoxShadow(
+                                                      color: Color.fromARGB(
+                                                          255, 194, 192, 192),
+                                                      blurRadius: 6.0,
+                                                      spreadRadius: 2.0,
+                                                      offset: Offset(0.0, 0.0),
+                                                    )
+                                                  ],
+                                                ),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Center(
+                                                    child: Text(
+                                                      teamController
+                                                          .ongoingTeams[0]
+                                                          .members[index]
+                                                          .name,
+                                                      style: const TextStyle(
+                                                        fontSize: 15,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
+                                  )),
+                                ),
+                              ],
                             ),
-                          ),
-                          SlideTransition(
-                            position: _offsetAnimation1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Stack(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: CircleAvatar(
-                                      backgroundColor: const Color(0xff5A88B0),
-                                      radius: 80,
-                                      child: getImageBuilder(
-                                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSR-dez27VzWPTKhNi5kQf-aNDxuBo1LQ1-Q&usqp=CAU'),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(25),
-                                        color: careem,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Color.fromARGB(
-                                                255, 194, 192, 192),
-                                            blurRadius: 6.0,
-                                            spreadRadius: 2.0,
-                                            offset: Offset(0.0, 0.0),
-                                          )
-                                        ],
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Muhammasd shahid',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SlideTransition(
-                            position: _offsetAnimation1,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Stack(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(3.0),
-                                    child: CircleAvatar(
-                                      backgroundColor: const Color(0xff5A88B0),
-                                      radius: 80,
-                                      child: getImageBuilder(
-                                          'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(25),
-                                        color: careem,
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Color.fromARGB(
-                                                255, 194, 192, 192),
-                                            blurRadius: 6.0,
-                                            spreadRadius: 2.0,
-                                            offset: Offset(0.0, 0.0),
-                                          )
-                                        ],
-                                      ),
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8.0),
-                                        child: Text(
-                                          'Muhammasd shahid',
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                          )
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          ConfettiWidget(
-            numberOfParticles: 100,
-            blastDirectionality: BlastDirectionality.explosive,
-            confettiController: _controllerTopCenter,
-            shouldLoop:
-                true, // start again as soon as the animation is finished
-            colors: const [
-              Color.fromARGB(255, 43, 247, 50),
-              Color.fromARGB(255, 1, 141, 255),
-              Color.fromARGB(255, 255, 0, 85),
-              Color.fromARGB(255, 255, 157, 9),
-              Color.fromARGB(255, 217, 0, 255),
-              Color.fromARGB(255, 183, 255, 0),
-              Color.fromARGB(255, 0, 72, 131),
-              Color.fromARGB(255, 189, 0, 63),
-              Color.fromARGB(255, 214, 9, 255),
-              Color.fromARGB(255, 200, 255, 0),
-            ], // manually specify the colors to be used
-            createParticlePath: drawStar, // define a custom shape/path.
-          )
+            ConfettiWidget(
+              numberOfParticles: 100,
+              blastDirectionality: BlastDirectionality.explosive,
+              confettiController: _controllerTopCenter,
+              shouldLoop:
+                  true, // start again as soon as the animation is finished
+              colors: const [
+                Color.fromARGB(255, 43, 247, 50),
+                Color.fromARGB(255, 1, 141, 255),
+                Color.fromARGB(255, 255, 0, 85),
+                Color.fromARGB(255, 255, 157, 9),
+                Color.fromARGB(255, 217, 0, 255),
+                Color.fromARGB(255, 183, 255, 0),
+                Color.fromARGB(255, 0, 72, 131),
+                Color.fromARGB(255, 189, 0, 63),
+                Color.fromARGB(255, 214, 9, 255),
+                Color.fromARGB(255, 200, 255, 0),
+              ], // manually specify the colors to be used
+              createParticlePath: drawStar, // define a custom shape/path.
+            )
+          }
         ],
       ),
     );
@@ -522,7 +456,10 @@ class _ResultScreenState extends State<ResultScreen>
           CircularProgressIndicator(
         value: progress.progress,
       ),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
+      errorWidget: (context, url, error) => const Icon(
+        Icons.person,
+        size: 60,
+      ),
     );
   }
 }

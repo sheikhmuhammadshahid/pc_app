@@ -4,12 +4,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+import 'package:quiz_competition_flutter/constant.dart';
+import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
 import 'package:quiz_competition_flutter/models/OnGoingEventModel.dart';
-import 'package:quiz_competition_flutter/models/TeamConnected.dart';
-import 'package:quiz_competition_flutter/screens/quiz/quiz_screen.dart';
 
+import 'package:quiz_competition_flutter/screens/quiz/quiz_screen.dart';
+import 'package:quiz_competition_flutter/screens/serverside/result_Screen.dart';
+
+import '../GetConnectToServerDialogue.dart';
 import '../models/MyMessage.dart';
 import '../screens/serverside/dashboard.dart';
 import '../screens/serverside/widgets/que_screen.dart';
@@ -21,17 +25,19 @@ class ClientGetController extends GetxController {
   late ClientProvider clientProvider;
   RxInt isConnected = 0.obs;
   late MyMessage myMessage;
-
+  bool socket_connected = false;
   connect(ip, port) async {
     try {
       Socket socket = await Socket.connect(ip, 1234);
       clientProvider.addSocket(socket);
+      socket_connected = true;
+
       return socket;
     } catch (e) {
       print(e);
       EasyLoading.show(
           status: 'Server is not started yet.', dismissOnTap: true);
-
+      socket_connected = false;
       return null;
     }
   }
@@ -97,9 +103,55 @@ class ClientGetController extends GetxController {
           for (var element in teams) {
             clientProvider.addConnectedTeam(teamName: element);
           }
+        } else if (map['todo'] == 'result') {
+          if (nameController.value.text.trim() == 'admin1' &&
+              map['value'] == "true") {
+            print(
+                'type ==========${clientProvider.ongoinQuestion!.question!.type}');
+            Get.to(ResultScreen(
+                round: clientProvider.ongoinQuestion!.question!.type
+                    .toLowerCase()));
+          } else if (nameController.value.text.trim() == 'admin1') {
+            Get.back();
+          }
         } else if (map['todo'] == 'hide') {
           clientProvider.changeHiddenState(
               toHide: bool.tryParse(map['value']) ?? false);
+        } else if (map['todo'] == 'RapidAnswer') {
+          TeamsController teamsController = Get.find<TeamsController>();
+          EventController eventController = Get.find<EventController>();
+          if (teamsController.ongoingTeams.any((element) =>
+              element.team.teamName == eventController.teamName.value)) {
+            if (clientProvider.ongoinQuestion!.round != 'buzzer') {
+              eventController.team = teamsController.ongoingTeams.indexWhere(
+                  (element) =>
+                      element.team.teamName.toLowerCase() ==
+                      eventController.teamName.value.toLowerCase());
+            } else {
+              eventController.team = teamsController.ongoingTeams.indexWhere(
+                  (element) =>
+                      element.team.teamName.toLowerCase() ==
+                      clientProvider.pressedBy.toLowerCase());
+            }
+            print('============ team index is ${eventController.team}');
+            if (eventController.team < teamsController.ongoingTeams.length) {
+              if (map['value'] == 'correct') {
+                Get.find<QuestionController>().playCorrectSong();
+                teamsController
+                    .ongoingTeams[eventController.team].team.rapidRound++;
+                teamsController
+                    .ongoingTeams[eventController.team].team.scores++;
+              } else if (map['value'] == 'wrong') {
+                if (clientProvider.ongoinQuestion!.round == 'rapid') {
+                  Get.find<QuestionController>().playWrongSong();
+                } else if (clientProvider.ongoinQuestion!.round == 'buzzer') {
+                  Get.find<QuestionController>().playBuzzer();
+                  teamsController
+                      .ongoingTeams[eventController.team].team.buzzerWrong++;
+                }
+              }
+            }
+          }
         } else if (map['todo'] == 'answer') {
           Get.find<QuestionController>()
               .checkAns(clientProvider.ongoinQuestion!.question!, map['value']);
@@ -111,7 +163,7 @@ class ClientGetController extends GetxController {
         } else if (map['todo'] == 'buzzer') {
           clientProvider.changePressedBy(name: map['value']);
 
-          if (nameController.value.text.trim() == 'admin' &&
+          if (nameController.value.text.trim() == 'admin1' &&
               map['value'] != '-1') {
             Get.find<QuestionController>().playBuzzerPressed();
           }
@@ -167,9 +219,10 @@ class ClientGetController extends GetxController {
           print('Error: $error');
           // clientProvider.removeSocket();
         },
-        onDone: () {
+        onDone: () async {
           print('Disconnected from the server.');
           clientProvider.removeSocket();
+          await getConnectToServerDialogue(context: Get.context!);
         },
       );
     } catch (e) {}

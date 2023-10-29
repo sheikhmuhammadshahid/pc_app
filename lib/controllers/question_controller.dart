@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quiz_competition_flutter/Client/Clients.dart';
+import 'package:quiz_competition_flutter/models/MyMessage.dart';
 
+import '../models/OnGoingEventModel.dart';
 import '../models/Question.dart';
 import 'EventsController.dart';
 import 'TeamsController.dart';
@@ -25,9 +28,11 @@ class QuestionController extends GetxController
   // static int ongoingEventId = 7;
   Rx<Color> progressColor = Colors.green.obs;
   late RxList questions = [].obs;
+  OnGoingEvent? ongoinQuestion;
   RxBool isOptionsDisabled = false.obs;
   final RxBool _isAnswered = false.obs;
   RxBool get isAnswered => _isAnswered;
+  String pressedBy = '-1';
 
   late String _correctAns;
   String get correctAns => _correctAns;
@@ -49,7 +54,13 @@ class QuestionController extends GetxController
     // Our animation duration is 60 s
     // so our plan is to fill the progress bar within 60s
     animationController = AnimationController(
-        duration: Duration(seconds: round != 'rapid' ? 60 : 120), vsync: this)
+        duration: Duration(
+            seconds: round != 'rapid'
+                ? round == 'buzzer'
+                    ? 7
+                    : 60
+                : 120),
+        vsync: this)
       ..addListener(() {
         if (animationController!.value == 10 && Platform.isWindows) {
           playTimerSound();
@@ -60,6 +71,14 @@ class QuestionController extends GetxController
             animationController!.value) {
           progressColor.value = Colors.amberAccent[700]!;
         }
+        try {
+          if (ongoinQuestion != null && animationController!.value == 1) {
+            if (ongoinQuestion!.round == 'buzzer') {
+              Get.find<ClientGetController>().sendMessage(
+                  MyMessage(todo: 'RapidAnswer', value: 'wrong').toJson());
+            }
+          }
+        } catch (e) {}
       });
     _animation = Tween<double>(begin: 1, end: 0).animate(animationController!)
       ..addListener(() {
@@ -91,34 +110,49 @@ class QuestionController extends GetxController
     _isAnswered.value = true;
     _correctAns = question.answer.trim();
     _selectedAns = selectedIndex.trim();
-    if (animationController != null) {
-      animationController!.stop();
-    }
+    try {
+      if (animationController != null) {
+        animationController!.stop();
+      }
+    } catch (e) {}
 
     update();
-    round = question.type.toLowerCase();
-    if (_correctAns == _selectedAns) {
-      playCorrectSong();
-
-      if (round == 'rapid') {
-        teamController.ongoingTeams[eventController.team].team.rapidRound =
-            teamController.ongoingTeams[eventController.team].team.rapidRound +
-                1;
-      } else if (round == 'buzzer') {
-        teamController.ongoingTeams[eventController.team].team.buzzerRound =
-            teamController.ongoingTeams[eventController.team].team.buzzerRound +
-                1;
-      } else if (round == 'mcq') {
-        teamController.ongoingTeams[eventController.team].team.mcqRound =
-            teamController.ongoingTeams[eventController.team].team.mcqRound + 1;
+    if (teamController.ongoingTeams.any((element) =>
+        element.team.teamName.toLowerCase() ==
+            eventController.teamName.value.toLowerCase() ||
+        element.team.teamName.toLowerCase() == pressedBy.toLowerCase())) {
+      round = question.type.toLowerCase();
+      if (round != 'buzzer') {
+        eventController.team = teamController.ongoingTeams.indexWhere(
+            (element) =>
+                element.team.teamName.toLowerCase() ==
+                eventController.teamName.value.toLowerCase());
+      } else {
+        eventController.team = teamController.ongoingTeams.indexWhere(
+            (element) =>
+                element.team.teamName.toLowerCase() == pressedBy.toLowerCase());
       }
-    } else if (round == 'buzzer') {
-      playWrongSong();
-      teamController.ongoingTeams[eventController.team].team.buzzerWrong =
-          teamController.ongoingTeams[eventController.team].team.buzzerWrong +
-              1;
-    } else {
-      playWrongSong();
+      print('============ team index is ${eventController.team}');
+      if (_correctAns == _selectedAns) {
+        playCorrectSong();
+
+        if (round == 'rapid') {
+          teamController.ongoingTeams[eventController.team].team.rapidRound++;
+          teamController.ongoingTeams[eventController.team].team.scores++;
+        } else if (round == 'buzzer') {
+          teamController.ongoingTeams[eventController.team].team.buzzerRound++;
+          teamController.ongoingTeams[eventController.team].team.scores++;
+        } else if (round == 'mcq') {
+          teamController.ongoingTeams[eventController.team].team.mcqRound++;
+          teamController.ongoingTeams[eventController.team].team.scores++;
+        }
+      } else if (round == 'buzzer') {
+        playWrongSong();
+        // teamController.ongoingTeams[eventController.team].team.scores -= 2;
+        teamController.ongoingTeams[eventController.team].team.buzzerWrong++;
+      } else {
+        playWrongSong();
+      }
     }
 
     // It will stop the counter
@@ -145,7 +179,7 @@ class QuestionController extends GetxController
 
   playBuzzer() async {
     await _assetsAudioPlayer.play(
-      AssetSource('icons/Songs/buzzer.wav'),
+      AssetSource('icons/Songs/buzzerPressed.wav'),
       //volume: 100
     );
   }
@@ -160,7 +194,7 @@ class QuestionController extends GetxController
   }
 
   playTimerSound() async {
-    await _assetsAudioPlayer.play(AssetSource("icons/Songs/countDown.wav"));
+    await _assetsAudioPlayer.play(AssetSource("icons/Songs/buzzerPressed.wav"));
   }
 
   var eventController = Get.put(EventController());

@@ -50,6 +50,7 @@ dependencies:
   confetti: ^0.7.0
   cached_network_image: ^3.3.0
   pluto_grid: ^7.0.2
+  lottie: ^2.7.0
 
 dev_dependencies:
   flutter_test:

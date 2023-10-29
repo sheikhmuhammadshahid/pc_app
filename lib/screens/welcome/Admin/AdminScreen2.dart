@@ -7,7 +7,6 @@ import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
-import 'package:quiz_competition_flutter/main.dart';
 import 'package:quiz_competition_flutter/screens/serverside/components/question_card.dart';
 
 import '../../../constants.dart';
@@ -281,7 +280,19 @@ class _AdminScreen2State extends State<AdminScreen2> {
                     },
                     child: const Text('Next')),
               ],
-            )
+            ),
+            ElevatedButton(
+                onPressed: () async {
+                  clientProvider.changeResultScreenState(
+                      toHide: !clientProvider.isResultShowing);
+                  Get.find<ClientGetController>().sendMessage(MyMessage(
+                          todo: 'result',
+                          value: (clientProvider.isResultShowing).toString())
+                      .toJson());
+                },
+                child: Text(!context.watch<ClientProvider>().isResultShowing
+                    ? 'View Result'
+                    : 'Hide Result')),
           ],
         ),
       ],

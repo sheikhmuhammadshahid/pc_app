@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
 import 'package:quiz_competition_flutter/models/MyMessage.dart';
 import 'package:quiz_competition_flutter/screens/quiz/components/question_card.dart';
 
+import '../../constants.dart';
 import '../../controllers/question_controller.dart';
-import '../serverside/widgets/que_screen.dart';
-import '../welcome/welcome_screen.dart';
-import 'components/body.dart';
+import 'components/progress_bar.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -39,13 +39,22 @@ class _QuizScreenState extends State<QuizScreen> {
         //         context: context, clientProvider: clientProvider)
         //     :
         context.watch<ClientProvider>().isHidden
-            ? const Center(
-                child: Text('Event is pauesed by the admin',
-                    style: TextStyle(color: Colors.white)),
-              )
+            ? getLotties(context: context, lotties: 'assets/paused.json')
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  if (clientProvider.ongoinQuestion != null) ...{
+                    if (clientProvider.ongoinQuestion!.round == 'buzzer')
+                      const Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                        child: ProgressBar(),
+                      ),
+                  },
+                  const SizedBox(height: kDefaultPadding),
                   if (clientProvider.ongoinQuestion != null)
                     if (clientProvider.ongoinQuestion!.round.toLowerCase() ==
                         'buzzer')
@@ -61,6 +70,18 @@ class _QuizScreenState extends State<QuizScreen> {
                                         .nameController.value.text
                                         .trim())
                                 .toJson());
+
+                            try {
+                              Get.find<QuestionController>()
+                                  .animationController!
+                                  .duration = const Duration(seconds: 7);
+                              Get.find<QuestionController>()
+                                  .animationController!
+                                  .reset();
+                              Get.find<QuestionController>()
+                                  .animationController!
+                                  .forward();
+                            } catch (e) {}
                           }
                         },
                         child: CircleAvatar(
@@ -87,16 +108,11 @@ class _QuizScreenState extends State<QuizScreen> {
                               child: QuestionCard(
                                   question:
                                       clientProvider.ongoinQuestion!.question))
-                          : const Center(
-                              child: Text('No questions found',
-                                  style: TextStyle(color: Colors.white)),
-                            )
-                      : const Center(
-                          child: Text(
-                            'Question will be shown here!',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                          : getLotties(
+                              context: context,
+                              lotties: 'assets/noQuestion.json')
+                      : getLotties(
+                          context: context, lotties: 'assets/paused.json')
                 ],
               ),
 
@@ -104,6 +120,15 @@ class _QuizScreenState extends State<QuizScreen> {
         //     child: CircularProgressIndicator(),
         //   )
       ],
+    );
+  }
+
+  Widget getLotties({required BuildContext context, required String lotties}) {
+    return Center(
+      child: Lottie.asset(lotties,
+          width: context.isPhone ? context.width * 0.9 : context.width * 0.6,
+          height:
+              context.isPhone ? context.height * 0.6 : context.height * 0.8),
     );
   }
 }
