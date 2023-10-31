@@ -60,9 +60,7 @@ class _ResultScreenState extends State<ResultScreen>
 
   List<PlutoRow> getRows({required int teamIndex}) {
     TeamModel team = teamController.ongoingTeams[teamIndex].team;
-    teamController.ongoingTeams[teamIndex].team.scores =
-        ((team.mcqRound + team.rapidRound + team.buzzerRound) -
-            (team.buzzerWrong * 2));
+
     return [
       PlutoRow(
         cells: {
@@ -164,11 +162,20 @@ class _ResultScreenState extends State<ResultScreen>
       curve: Curves.easeIn,
     ));
     _controller.forward();
+    checkResult();
   }
 
   int winner = -1;
   checkResult() {
-    teamController.ongoingTeams.sort();
+    for (int i = 0; i < teamController.ongoingTeams.length; i++) {
+      TeamModel team = teamController.ongoingTeams[i].team;
+      teamController.ongoingTeams[i].team.scores =
+          ((team.mcqRound + team.rapidRound + team.buzzerRound) -
+              (team.buzzerWrong * 2));
+    }
+
+    teamController.ongoingTeams
+        .sort((a, b) => b.team.scores.compareTo(a.team.scores));
 
     if (teamController.ongoingTeams.isNotEmpty) {
       winner = teamController.ongoingTeams
@@ -179,6 +186,7 @@ class _ResultScreenState extends State<ResultScreen>
     } else {
       winner = -1;
     }
+    setState(() {});
   }
 
   TeamsController teamController = Get.find<TeamsController>();

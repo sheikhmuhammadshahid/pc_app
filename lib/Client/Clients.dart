@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:quiz_competition_flutter/constant.dart';
 import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
@@ -52,9 +50,10 @@ class ClientGetController extends GetxController {
         // Get.back();
         print('Connected to the server.');
         handleMessages();
-        sendMessage(
-            MyMessage(todo: 'connected', value: nameController.value.text)
-                .toJson());
+        sendMessage(MyMessage(
+                todo: 'connected',
+                value: nameController.value.text.trim().toLowerCase())
+            .toJson());
 
         // if (nameController.value.text.toLowerCase() == 'admin') {
         //   Get.to(const DashBoardScreen());
@@ -103,6 +102,14 @@ class ClientGetController extends GetxController {
           for (var element in teams) {
             clientProvider.addConnectedTeam(teamName: element);
           }
+        } else if (map['todo'] == 'NextTeam') {
+          if (map['value'] == 'next') {
+            clientProvider.questionNo =
+                (clientProvider.questions.length ~/ 2) - 1;
+            clientProvider.nextQuestion(fromClient: true);
+          } else {
+            clientProvider.nextQuestion();
+          }
         } else if (map['todo'] == 'result') {
           if (nameController.value.text.trim() == 'admin1' &&
               map['value'] == "true") {
@@ -121,8 +128,10 @@ class ClientGetController extends GetxController {
           TeamsController teamsController = Get.find<TeamsController>();
           EventController eventController = Get.find<EventController>();
           if (teamsController.ongoingTeams.any((element) =>
-              element.team.teamName == eventController.teamName.value)) {
-            if (clientProvider.ongoinQuestion!.round != 'buzzer') {
+              element.team.teamName.toLowerCase() ==
+              eventController.teamName.value.toLowerCase())) {
+            if (clientProvider.ongoinQuestion!.round.toLowerCase() !=
+                'buzzer') {
               eventController.team = teamsController.ongoingTeams.indexWhere(
                   (element) =>
                       element.team.teamName.toLowerCase() ==
@@ -176,21 +185,27 @@ class ClientGetController extends GetxController {
           clientProvider.addConnectedTeam(
               teamName: map['value'], toAdd: map['todo'] == 'connected');
           if (map['todo'] == 'connected') {
-            if (Get.find<ClientGetController>().nameController.value.text ==
+            if (Get.find<ClientGetController>()
+                        .nameController
+                        .value
+                        .text
+                        .toLowerCase() ==
                     'admin' &&
                 map['value'] == 'admin') {
               Get.offAll(const DashBoardScreen());
             } else if (Get.find<ClientGetController>()
                         .nameController
                         .value
-                        .text ==
+                        .text
+                        .toLowerCase() ==
                     'admin1' &&
                 map['value'] == 'admin1') {
               Get.to(ServerQuizScreen(''));
             } else if (Get.find<ClientGetController>()
                     .nameController
                     .value
-                    .text ==
+                    .text
+                    .toLowerCase() ==
                 map['value']) {
               Get.to(const QuizScreen());
             }
@@ -198,8 +213,22 @@ class ClientGetController extends GetxController {
         }
       } else if (res == 2) {
         try {
+          // if (nameController.value.text != 'admin' && ) {
+          //   QuestionController qcontroller = Get.find<QuestionController>();
+          //   if (qcontroller.animationController != null) {
+          //     // qcontroller.removeListener(() {});
+          //     // qcontroller.animationController!.dispose();
+          //     // qcontroller.animationController.duration
+
+          //     qcontroller.animationController!.reset();
+          //   }
+          // }
+
           // Map<String, dynamic> map = jsonDecode(message);
           OnGoingEvent ques = OnGoingEvent.fromJson(message);
+          if (ques.round.toLowerCase() == 'buzzer') {
+            Get.find<QuestionController>().timedOut = false;
+          }
           clientProvider.updateOnGoingQUestion(ques);
         } catch (e) {
           print('-------------------issueee---------------');

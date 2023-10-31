@@ -49,11 +49,11 @@ class ProgressBar extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        "${(controller.animation.value * (clientProvider.round == 'rapid' ? 120 : clientProvider.round == 'buzzer' ? 5 : 60)).round()} sec",
-                        style: const TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold),
-                      ),
+                      // Text(
+                      //   "${(controller.animation.value * (clientProvider.round == 'rapid' ? 120 : clientProvider.round == 'buzzer' ? 5 : 60)).round()} sec",
+                      //   style: const TextStyle(
+                      //       color: Colors.black, fontWeight: FontWeight.bold),
+                      // ),
                       SvgPicture.asset("assets/icons/clock.svg",
                           color: Colors.white),
                     ],

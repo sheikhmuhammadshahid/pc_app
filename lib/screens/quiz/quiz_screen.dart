@@ -5,6 +5,7 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
+import 'package:quiz_competition_flutter/constant.dart';
 import 'package:quiz_competition_flutter/models/MyMessage.dart';
 import 'package:quiz_competition_flutter/screens/quiz/components/question_card.dart';
 
@@ -72,15 +73,13 @@ class _QuizScreenState extends State<QuizScreen> {
                                 .toJson());
 
                             try {
-                              Get.find<QuestionController>()
-                                  .animationController!
-                                  .duration = const Duration(seconds: 7);
-                              Get.find<QuestionController>()
-                                  .animationController!
-                                  .reset();
-                              Get.find<QuestionController>()
-                                  .animationController!
-                                  .forward();
+                              QuestionController qController =
+                                  Get.find<QuestionController>();
+
+                              qController.animationController!.duration =
+                                  const Duration(seconds: 7);
+                              qController.animationController!.reset();
+                              qController.animationController!.forward();
                             } catch (e) {}
                           }
                         },
@@ -97,6 +96,10 @@ class _QuizScreenState extends State<QuizScreen> {
                                   : clientProvider.pressedBy == '-1'
                                       ? Colors.red
                                       : Colors.grey,
+                          child:
+                              context.watch<ClientProvider>().pressedBy == "-1"
+                                  ? LottieBuilder.asset('assets/pressMe.json')
+                                  : null,
                         ),
                       ),
                   const SizedBox(

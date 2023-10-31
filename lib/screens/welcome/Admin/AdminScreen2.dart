@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz_competition_flutter/Client/ClientDetails.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
+import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
 import 'package:quiz_competition_flutter/screens/serverside/components/question_card.dart';
@@ -165,8 +167,14 @@ class _AdminScreen2State extends State<AdminScreen2> {
           height: 15,
         ),
         context.watch<ClientProvider>().questions.isEmpty
-            ? const Center(
-                child: Text('No questions found '),
+            ? Center(
+                child: Lottie.asset('assets/noQuestion.json',
+                    width: context.isPhone
+                        ? context.width * 0.9
+                        : context.width * 0.6,
+                    height: context.isPhone
+                        ? context.height * 0.6
+                        : context.height * 0.8),
               )
             : Expanded(
                 child: PageView.builder(
@@ -223,7 +231,13 @@ class _AdminScreen2State extends State<AdminScreen2> {
                     .toList(),
                 onChanged: (value) async {
                   clientProvider.round = value;
-
+                  Get.find<EventController>().team = 0;
+                  Get.find<EventController>().teamName.value =
+                      Get.find<TeamsController>()
+                          .ongoingTeams[0]
+                          .team
+                          .teamName
+                          .toLowerCase();
                   clientProvider.pressedBy = '-1';
                   await clientProvider.getQuestions();
                   // setState(() {});

@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
-import 'package:quiz_competition_flutter/constant.dart';
 import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
@@ -16,9 +16,7 @@ import 'ApiClient.dart';
 class ClientProvider extends ChangeNotifier {
   List<String> messages = [];
   bool isAnswered = false;
-  AnimationController? animationController;
-  Animation? _animation;
-  Animation get animation => _animation!;
+
   int eventId = -1;
   String? round;
   String pressedBy = '-1';
@@ -33,7 +31,7 @@ class ClientProvider extends ChangeNotifier {
   bool isHidden = false;
   changePressedBy({required String name}) {
     pressedBy = name;
-    Get.find<QuestionController>().pressedBy = name;
+    Get.find<QuestionController>().pressedBy = name.toLowerCase();
     notifyListeners();
   }
 
@@ -76,12 +74,17 @@ class ClientProvider extends ChangeNotifier {
         .where((element) =>
             element.type.toLowerCase().contains(round.toString().toLowerCase()))
         .toList();
+
     print('---------round------');
     print('questions: ${questions.length} ');
     try {
       sendMessage();
     } catch (e) {}
     notifyListeners();
+    try {
+      await pageController.animateToPage(0,
+          duration: const Duration(milliseconds: 10), curve: Curves.bounceIn);
+    } catch (e) {}
   }
 
   updatedQUestions({required List<Question> question}) async {
@@ -95,15 +98,34 @@ class ClientProvider extends ChangeNotifier {
 
   PageController pageController = PageController();
   // PageController get pageController => _pageController;
-  nextQuestion() async {
+  nextQuestion({bool fromClient = false}) async {
     try {
       if (questionNo < questions.length - 1) {
         questionNo++;
-        await updateTheQnNum();
+        if (!fromClient) {
+          await updateTheQnNum();
+        } else {
+          if (eventController.team <
+              (teamsController.ongoingTeams.length - 1)) {
+            eventController.team = eventController.team++;
+            eventController.teamName.value = teamsController
+                .ongoingTeams[eventController.team].team.teamName
+                .trim()
+                .toLowerCase();
+            await pageController.animateToPage(questionNo,
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.bounceIn);
+          }
+        }
         await sendMessage();
-        await pageController.nextPage(
-            duration: const Duration(milliseconds: 400), curve: Curves.easeIn);
+        if (!fromClient) {
+          await pageController.nextPage(
+              duration: const Duration(milliseconds: 400),
+              curve: Curves.easeIn);
+        }
         notifyListeners();
+      } else {
+        EasyLoading.showToast('No more questions');
       }
     } catch (e) {}
   }
@@ -145,11 +167,27 @@ class ClientProvider extends ChangeNotifier {
   }
 
   OnGoingEvent? ongoinQuestion;
-
+  String questionFor = '-1';
   updateOnGoingQUestion(OnGoingEvent onGoingEvent) {
     ongoinQuestion = onGoingEvent;
-    Get.find<QuestionController>().ongoinQuestion = ongoinQuestion;
-    Get.find<QuestionController>().round = ongoinQuestion!.round;
+    QuestionController qController = Get.find<QuestionController>();
+    print('======checkin1');
+    if (Get.find<ClientGetController>()
+                .nameController
+                .value
+                .text
+                .trim()
+                .toLowerCase() !=
+            'admin' &&
+        !((qController.round ?? '').toLowerCase() == 'rapid' &&
+            questionFor.toLowerCase() !=
+                ongoinQuestion!.questionForTeam.toLowerCase())) {
+      print('======checkin2');
+
+      qController.animationController!.reset();
+    }
+    qController.ongoinQuestion = ongoinQuestion;
+    qController.round = ongoinQuestion!.round;
 
     pressedBy = '-1';
     Get.find<QuestionController>().pressedBy = '-1';
@@ -157,6 +195,28 @@ class ClientProvider extends ChangeNotifier {
     Get.find<QuestionController>().isAnswered.value = false;
 
     notifyListeners();
+    if ((qController.round ?? '').toLowerCase() == 'rapid' &&
+        questionFor.toLowerCase() !=
+            ongoinQuestion!.questionForTeam.toLowerCase()) {
+      print('======checkin3');
+
+      if (Get.find<ClientGetController>()
+              .nameController
+              .value
+              .text
+              .trim()
+              .toLowerCase() ==
+          'admin1') {
+        print('======checkin4');
+
+        questionFor = ongoinQuestion!.questionForTeam.toLowerCase();
+        qController.animationController!.duration =
+            const Duration(seconds: 120);
+
+        qController.animationController!.reset();
+        qController.animationController!.forward();
+      }
+    }
   }
 
   Socket? socket;
@@ -188,15 +248,15 @@ class ClientProvider extends ChangeNotifier {
         teamName.toLowerCase() != 'admin1') {
       if (toAdd) {
         if (!connecteds.contains(teamName)) {
-          connectedTeams++;
+          // connectedTeams++;
           connecteds.add(teamName);
         }
       } else {
         if (connecteds.remove(teamName)) {
-          connectedTeams--;
+          // connectedTeams--;
         }
       }
-      if (connectedTeams == ongoingTeams.length &&
+      if (connecteds.length == ongoingTeams.length &&
           admin1Connected &&
           adminConnected) {
         showQuestinos = true;
@@ -220,14 +280,18 @@ class ClientProvider extends ChangeNotifier {
 
   List<OnGoingTeams> ongoingTeams = [];
   bool showQuestinos = false;
-  int connectedTeams = 0;
+  // int connectedTeams = 0;
   getTeamDetail() async {
     try {
       ongoingTeams = await getTeamsDetails(eventId: eventId);
+      for (int i = 0; i < ongoingTeams.length; i++) {
+        ongoingTeams[i].team.teamName =
+            ongoingTeams[i].team.teamName.toLowerCase();
+      }
       Get.find<TeamsController>().ongoingTeams = ongoingTeams;
       Get.find<EventController>().teamName.value =
           ongoingTeams[0].team.teamName;
-      connectedTeams = 0;
+      connecteds.clear();
       notifyListeners();
     } catch (e) {}
   }
@@ -266,7 +330,7 @@ class ClientProvider extends ChangeNotifier {
         // Get.find<QuestionController>().animationController!.reset();
         // Get.find<QuestionController>().animationController!.repeat();
         eventController.teamName.value =
-            ongoingTeams[1].team.teamName.toString();
+            ongoingTeams[1].team.teamName.toString().toLowerCase();
       }
     }
   }

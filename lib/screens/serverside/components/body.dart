@@ -27,18 +27,8 @@ class _BodyState extends State<Body> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // getqus();
   }
 
-  getqus() async {
-    // await controller.getQuestions(widget.round);
-
-    // setState(() {
-    //   isLoading = false;
-    // });
-  }
-
-  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     // So that we have acccess our controller
@@ -80,7 +70,7 @@ class _BodyState extends State<Body> {
                       children: [
                         TextSpan(
                           text:
-                              "/${context.watch<ClientProvider>().questions.length}sdsd",
+                              "/${context.watch<ClientProvider>().questions.length}",
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall!
@@ -154,12 +144,7 @@ class _BodyState extends State<Body> {
                           return Obx(
                             () {
                               return GestureDetector(
-                                onTap: () {
-                                  context
-                                      .read<ClientProvider>()
-                                      .animationController!
-                                      .repeat();
-                                },
+                                onTap: () {},
                                 child: CircleAvatar(
                                   backgroundColor: eventController
                                               .teamName.value !=

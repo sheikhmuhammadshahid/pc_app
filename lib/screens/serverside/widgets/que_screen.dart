@@ -33,6 +33,7 @@ class _ServerQuizScreenState extends State<ServerQuizScreen> {
 
   bool isLoading = true;
   late ClientProvider clientProvider;
+
   @override
   Widget build(BuildContext context) {
     clientProvider = context.read<ClientProvider>();
@@ -139,6 +140,15 @@ class _ServerQuizScreenState extends State<ServerQuizScreen> {
                                   lotties: 'assets/noQuestion.json')
                           : getLotties(
                               context: context, lotties: 'assets/paused.json'),
+                  Obx(() => Get.find<QuestionController>().show10secClock.value
+                      ? Align(
+                          alignment: Alignment.topRight,
+                          child: LottieBuilder.asset(
+                            'assets/lastTenSec.json',
+                            height: 100,
+                            width: 100,
+                          ))
+                      : const SizedBox.shrink())
                 ],
               ));
   }
@@ -234,7 +244,7 @@ Widget getConnectingScreen(
                       height: 10,
                     ),
                     Text(
-                      'Teams remaining : ${context.watch<ClientProvider>().ongoingTeams.length - context.watch<ClientProvider>().connectedTeams} ',
+                      'Teams remaining : ${context.watch<ClientProvider>().ongoingTeams.length - context.watch<ClientProvider>().connecteds.length} ',
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 25,

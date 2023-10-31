@@ -140,8 +140,9 @@ class QuestionCard extends StatelessWidget {
                         .trim()) ||
             (clientProvider.ongoinQuestion!.question!.type.toLowerCase() ==
                     'buzzer' &&
-                clientProvider.pressedBy ==
-                    clientController.nameController.value.text)) {
+                clientProvider.pressedBy.toLowerCase() ==
+                    clientController.nameController.value.text.toLowerCase() &&
+                !quesController.timedOut)) {
           try {
             if (clientProvider.ongoinQuestion!.round == 'buzzer') {
               quesController.animationController!.stop();

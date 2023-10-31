@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quiz_competition_flutter/Client/Clients.dart';
 import 'package:quiz_competition_flutter/models/MyMessage.dart';
+import 'package:quiz_competition_flutter/screens/Widgets/TimeOutWidget.dart';
 
 import '../models/OnGoingEventModel.dart';
 import '../models/Question.dart';
@@ -19,7 +20,7 @@ class QuestionController extends GetxController
   Animation? _animation;
   final AudioPlayer _assetsAudioPlayer = AudioPlayer();
   String? round;
-
+  bool timedOut = false;
   // so that we can access our animation outside
   Animation get animation => _animation!;
   String ipAddress = "";
@@ -33,7 +34,7 @@ class QuestionController extends GetxController
   final RxBool _isAnswered = false.obs;
   RxBool get isAnswered => _isAnswered;
   String pressedBy = '-1';
-
+  RxBool show10secClock = false.obs;
   late String _correctAns;
   String get correctAns => _correctAns;
 
@@ -62,20 +63,31 @@ class QuestionController extends GetxController
                 : 120),
         vsync: this)
       ..addListener(() {
-        if (animationController!.value == 10 && Platform.isWindows) {
+        if (animationController!.value.toInt() == 10 && Platform.isWindows) {
           playTimerSound();
+          // EasyLoading.showToast('aewn 10secons left');
         }
-        if (animationController!.value == 10) {
+        if (animationController!.value.toInt() == 10) {
+          show10secClock.value = true;
           progressColor.value = Colors.red;
         } else if (animationController!.duration!.inSeconds / 2 ==
             animationController!.value) {
           progressColor.value = Colors.amberAccent[700]!;
         }
         try {
-          if (ongoinQuestion != null && animationController!.value == 1) {
+          if (ongoinQuestion != null &&
+              animationController!.value.toInt() == 1) {
+            timedOut = true;
+            show10secClock.value = false;
             if (ongoinQuestion!.round == 'buzzer') {
               Get.find<ClientGetController>().sendMessage(
                   MyMessage(todo: 'RapidAnswer', value: 'wrong').toJson());
+            } else if (ongoinQuestion!.round == 'rapid' &&
+                clientGetController.nameController.value.text
+                        .toLowerCase()
+                        .trim() ==
+                    'admin1') {
+              getTimeOutDialogue();
             }
           }
         } catch (e) {}
@@ -163,38 +175,55 @@ class QuestionController extends GetxController
     // });
   }
 
+  ClientGetController clientGetController = Get.find<ClientGetController>();
   playWrongSong() async {
     //_assetsAudioPlayer.open(Audio("assets/icons/Songs/Wrong.wav"));
-    await _assetsAudioPlayer.play(AssetSource('icons/Songs/wrong.wav'));
+    if (clientGetController.nameController.value.text.toLowerCase().trim() ==
+        'admin1') {
+      await _assetsAudioPlayer.play(AssetSource('icons/Songs/wrong.wav'));
+    }
   }
 
   playCorrectSong() async {
-    await _assetsAudioPlayer.play(
-      AssetSource('icons/Songs/correct.wav'),
-      //volume: 100
-    );
+    if (clientGetController.nameController.value.text.toLowerCase().trim() ==
+        'admin1') {
+      await _assetsAudioPlayer.play(
+        AssetSource('icons/Songs/correct.wav'),
+        //volume: 100
+      );
+    }
     // _assetsAudioPlayer.open(Audio("assets/icons/Songs/correct.wav"));
     // _assetsAudioPlayer.play();
   }
 
   playBuzzer() async {
-    await _assetsAudioPlayer.play(
-      AssetSource('icons/Songs/buzzerPressed.wav'),
-      //volume: 100
-    );
+    if (clientGetController.nameController.value.text.toLowerCase().trim() ==
+        'admin1') {
+      await _assetsAudioPlayer.play(
+        AssetSource('icons/Songs/buzzerPressed.wav'),
+        //volume: 100
+      );
+    }
   }
 
   playBuzzerPressed() async {
-    await _assetsAudioPlayer.play(
-      AssetSource('icons/Songs/buzzerPressed.wav'),
-      //volume: 100
-    );
+    if (clientGetController.nameController.value.text.toLowerCase().trim() ==
+        'admin1') {
+      await _assetsAudioPlayer.play(
+        AssetSource('icons/Songs/buzzerPressed.wav'),
+        //volume: 100
+      );
+    }
     // _assetsAudioPlayer.open(Audio("assets/icons/Songs/BuzzerPressed.wav"));
     // _assetsAudioPlayer.play();
   }
 
   playTimerSound() async {
-    await _assetsAudioPlayer.play(AssetSource("icons/Songs/buzzerPressed.wav"));
+    if (clientGetController.nameController.value.text.toLowerCase().trim() ==
+        'admin1') {
+      await _assetsAudioPlayer
+          .play(AssetSource("icons/Songs/buzzerPressed.wav"));
+    }
   }
 
   var eventController = Get.put(EventController());
