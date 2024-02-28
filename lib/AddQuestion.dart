@@ -69,41 +69,37 @@ class _AddQuestionsScreenState extends State<AddQuestionsScreen> {
       if (result != null) {
         File file = File(result.files.first.path!);
         var bytes = await file.readAsBytes();
-        if (bytes != null) {
-          var excel = Excel.decodeBytes(bytes.toList());
-          for (var table in excel.tables.keys) {
-            print(table); //sheet Name
-            if (excel.tables[table]!.maxCols == 8) {
-              print(excel.tables[table]!.maxRows);
-              int i = 0;
-              for (var row in excel.tables[table]!.rows) {
-                if (i != 0) {
-                  Question question = Question(
-                      id: 0,
-                      ques: row[0] == null ? '' : row[0]!.value.toString(),
-                      opt1: row[1] == null ? '' : row[1]!.value.toString(),
-                      opt2: row[2] == null ? '' : row[2]!.value.toString(),
-                      opt3: row[3] == null ? '' : row[3]!.value.toString(),
-                      opt4: row[4] == null ? '' : row[4]!.value.toString(),
-                      answer: row[5] == null ? '' : row[5]!.value.toString(),
-                      type: row[6] == null ? '' : row[6]!.value.toString(),
-                      eventId: (row[7] == null
-                          ? -1
-                          : double.parse(row[7]!.value.toString()).toInt()));
+        var excel = Excel.decodeBytes(bytes.toList());
+        for (var table in excel.tables.keys) {
+          print(table); //sheet Name
+          if (excel.tables[table]!.maxColumns == 8) {
+            print(excel.tables[table]!.maxRows);
+            int i = 0;
+            for (var row in excel.tables[table]!.rows) {
+              if (i != 0) {
+                Question question = Question(
+                    id: 0,
+                    ques: row[0] == null ? '' : row[0]!.value.toString(),
+                    opt1: row[1] == null ? '' : row[1]!.value.toString(),
+                    opt2: row[2] == null ? '' : row[2]!.value.toString(),
+                    opt3: row[3] == null ? '' : row[3]!.value.toString(),
+                    opt4: row[4] == null ? '' : row[4]!.value.toString(),
+                    answer: row[5] == null ? '' : row[5]!.value.toString(),
+                    type: row[6] == null ? '' : row[6]!.value.toString(),
+                    eventId: (row[7] == null
+                        ? -1
+                        : double.parse(row[7]!.value.toString()).toInt()));
 
-                  excelDataList.add(question);
-                }
-                i++;
+                excelDataList.add(question);
               }
-            } else {
-              EasyLoading.show(
-                  dismissOnTap: true,
-                  status:
-                      'Data is not in correct formate.\n columns should be of length 8');
+              i++;
             }
+          } else {
+            EasyLoading.show(
+                dismissOnTap: true,
+                status:
+                    'Data is not in correct formate.\n columns should be of length 8');
           }
-        } else {
-          EasyLoading.showToast('There is some issue while reading this excel');
         }
         print('s');
         Get.back();
