@@ -51,6 +51,7 @@ dependencies:
   cached_network_image: ^3.3.0
   # pluto_grid: any
   lottie: ^3.1.0
+  syncfusion_flutter_datagrid: ^24.2.8
 
 dev_dependencies:
   flutter_test:
