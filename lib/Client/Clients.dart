@@ -115,9 +115,9 @@ class ClientGetController extends GetxController {
               map['value'] == "true") {
             print(
                 'type ==========${clientProvider.ongoinQuestion!.question!.type}');
-            Get.to(ResultScreen(
-                round: clientProvider.ongoinQuestion!.question!.type
-                    .toLowerCase()));
+            // Get.to(ResultScreen(
+            //     round: clientProvider.ongoinQuestion!.question!.type
+            //         .toLowerCase()));
           } else if (nameController.value.text.trim() == 'admin1') {
             Get.back();
           }
