@@ -281,17 +281,29 @@ class ClientGetController extends GetxController {
 
       // Loop through the interfaces
       for (NetworkInterface ni in interfaces) {
-        // Check if the interface is a WiFi interface
-        if (ni.name.startsWith('Wi')) {
+        // Check if the interface is a WiFi or cellular interface
+        if (ni.name.startsWith('Wi') && Platform.isWindows) {
           // Get the gateway address of the WiFi interface
           List<InternetAddress> addresses = ni.addresses;
           for (InternetAddress address in addresses) {
             ipController.value.text = address.address;
           }
         }
+        if ((ni.name.startsWith('en') || ni.name.startsWith('wl')) &&
+            !Platform.isWindows) {
+          // Get the IP address of the interface
+          List<InternetAddress> addresses = ni.addresses;
+          for (InternetAddress address in addresses) {
+            // Check if it's a valid IPv4 address
+            if (address.type == InternetAddressType.IPv4) {
+              ipController.value.text = address.address;
+            }
+          }
+        }
       }
     } catch (ex) {
-      Get.snackbar('', 'Could not load IP address.\nTry Again');
+      print('Could not load IP address: $ex');
+      return null;
     }
     return ipController.value.text;
   }

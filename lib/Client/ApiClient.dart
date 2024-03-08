@@ -150,8 +150,14 @@ saveEvent({required EventModel event}) async {
   try {
     EventController eventController = Get.find<EventController>();
 
-    var response = await d.Dio()
-        .post('${ip}AddEventApi.php', data: event.toJson(), options: options);
+    var response = await d.Dio().post('${ip}AddEventApi.php',
+        data: jsonEncode({
+          "date": event.date,
+          "type": event.type,
+          "status": event.status,
+          "Tteams": event.tTeams
+        }),
+        options: options);
     if (response.statusCode == 201) {
       Get.back();
       EasyLoading.showToast('Added successfully', dismissOnTap: true);
