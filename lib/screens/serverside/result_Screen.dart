@@ -224,6 +224,16 @@ class _ResultScreenState extends State<ResultScreen>
     setState(() {});
   }
 
+  bool isHaveHighestScores({required int teamindex}) {
+    int scores = teamController.ongoingTeams[teamindex].team.scores;
+    int id = teamController.ongoingTeams[teamindex].team.id ?? 0;
+    if (teamController.ongoingTeams.any(
+        (element) => element.team.scores == scores && id != element.team.id)) {
+      return false;
+    }
+    return true;
+  }
+
   TeamsController teamController = Get.find<TeamsController>();
   @override
   Widget build(BuildContext context) {
@@ -257,7 +267,10 @@ class _ResultScreenState extends State<ResultScreen>
                               const TextStyle(color: Colors.blue, fontSize: 30),
                         )),
                     Card(
-                      color: careem,
+                      elevation: 0,
+                      color: isHaveHighestScores(teamindex: index)
+                          ? Colors.green.withOpacity(0.1)
+                          : Colors.red.withOpacity(0.1),
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.only(

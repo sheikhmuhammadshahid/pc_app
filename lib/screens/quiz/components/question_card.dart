@@ -12,10 +12,10 @@ import 'option.dart';
 
 class QuestionCard extends StatelessWidget {
   QuestionCard({
-    Key? key,
+    super.key,
     // it means we have to pass this
     @required this.question,
-  }) : super(key: key);
+  });
   var quesController = Get.find<QuestionController>();
   var clientController = Get.find<ClientGetController>();
   Question? question;
