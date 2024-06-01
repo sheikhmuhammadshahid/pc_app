@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:quiz_competition_flutter/Client/Clients.dart';
 import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
@@ -145,15 +144,15 @@ class ClientProvider extends ChangeNotifier {
 
   sendMessage() async {
     try {
-      Get.find<ClientGetController>().sendMessage(OnGoingEvent(
-              eventId: eventId,
-              pressedBy: '-1',
-              round: round ?? "",
-              questionForTeam: Get.find<EventController>().teamName.value,
-              question: questions.isNotEmpty ? questions[questionNo] : null,
-              questionNo: questionNo,
-              totalQuestions: questions.length)
-          .toJson());
+      // Get.find<ClientGetController>().sendMessage(OnGoingEvent(
+      //         eventId: eventId,
+      //         pressedBy: '-1',
+      //         round: round ?? "",
+      //         questionForTeam: Get.find<EventController>().teamName.value,
+      //         question: questions.isNotEmpty ? questions[questionNo] : null,
+      //         questionNo: questionNo,
+      //         totalQuestions: questions.length)
+      //     .toJson());
     } catch (e) {}
   }
 

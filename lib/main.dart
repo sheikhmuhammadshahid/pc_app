@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -9,14 +10,17 @@ import 'package:quiz_competition_flutter/EventController.dart';
 import 'package:quiz_competition_flutter/controllers/EventsController.dart';
 import 'package:quiz_competition_flutter/controllers/TeamsController.dart';
 import 'package:quiz_competition_flutter/controllers/question_controller.dart';
+import 'package:quiz_competition_flutter/firebase_options.dart';
 import 'package:quiz_competition_flutter/screens/serverside/result_Screen.dart';
 // import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart';
 // import 'package:serverpod_flutter/serverpod_flutter.dart';
 
+import 'screens/serverside/dashboard.dart';
 import 'screens/welcome/welcome_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   // sessionManager = SessionManager(
   //   caller: client.modules.auth,
   // );
@@ -111,13 +115,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     //Get.put(OnGoingEventController());
 
     return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        builder: EasyLoading.init(),
-        title: 'Serverpod Demo',
-        theme: ThemeData(
-          useMaterial3: true,
-          primarySwatch: Colors.blue,
-        ),
-        home: WelcomeScreen());
+      debugShowCheckedModeBanner: false,
+      builder: EasyLoading.init(),
+      title: 'Serverpod Demo',
+      theme: ThemeData(
+        useMaterial3: true,
+        primarySwatch: Colors.blue,
+      ),
+      // home: WelcomeScreen(),
+      home:const DashBoardScreen()
+    );
   }
 }

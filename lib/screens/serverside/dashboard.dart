@@ -42,24 +42,24 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     Size size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        appBar: context.watch<ClientProvider>().isConnected != 5
-            ? AppBar(
-                automaticallyImplyLeading: false,
-                title: Text(context.watch<ClientProvider>().socket == null
-                    ? 'Disconnected'
-                    : 'Connected'),
-                actions: [
-                  IconButton(
-                      onPressed: () async {
-                        await getConnectToServerDialogue(context: context);
-                      },
-                      icon: const Icon(
-                        Icons.restart_alt_rounded,
-                        color: Colors.green,
-                      ))
-                ],
-              )
-            : null,
+        // appBar: context.watch<ClientProvider>().isConnected != 5
+        //     ? AppBar(
+        //         automaticallyImplyLeading: false,
+        //         title: Text(context.watch<ClientProvider>().socket == null
+        //             ? 'Disconnected'
+        //             : 'Connected'),
+        //         actions: [
+        //           IconButton(
+        //               onPressed: () async {
+        //                 await getConnectToServerDialogue(context: context);
+        //               },
+        //               icon: const Icon(
+        //                 Icons.restart_alt_rounded,
+        //                 color: Colors.green,
+        //               ))
+        //         ],
+        //       )
+        //     : null,
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,

@@ -9,7 +9,6 @@ import 'package:quiz_competition_flutter/models/OnGoingTeamsModel.dart';
 
 // import 'package:quiz_competition_client/quiz_competition_client.dart';
 
-import '../Client/Clients.dart';
 import '../controllers/EventsController.dart';
 import '../controllers/TeamsController.dart';
 import '../controllers/question_controller.dart';
@@ -99,7 +98,7 @@ saveQuestions({required List<Question> questions, required int eventId}) async {
 deleteEvent({required EventModel e}) async {
   var controller = Get.find<QuestionController>();
   if (controller.ipAddress == "") {
-    controller.ipAddress = await ClientGetController().getIp();
+    // controller.ipAddress = await ClientGetController().getIp();
   }
   try {
     var response = await d.Dio().get(

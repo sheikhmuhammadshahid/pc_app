@@ -1,0 +1,143 @@
+{
+  "project_info": {
+    "project_number": "784540966473",
+    "project_id": "bmms-816a4",
+    "storage_bucket": "bmms-816a4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784540966473:android:15f375f05fdf2dbc572998",
+        "android_client_info": {
+          "package_name": "com.biit.quiz_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784540966473-fe9ljetvmrpmr9a8hcc2kmgnkt0g1ell.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc4_NIgmOjzEf9udBekP6nh6STZl9fY9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784540966473-fe9ljetvmrpmr9a8hcc2kmgnkt0g1ell.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "784540966473-2chc3t3li77b2jrn6c6vg0irojj51sv7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.recepieApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784540966473:android:3909740b9457f4f8572998",
+        "android_client_info": {
+          "package_name": "com.example.bhatamanagement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784540966473-fe9ljetvmrpmr9a8hcc2kmgnkt0g1ell.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc4_NIgmOjzEf9udBekP6nh6STZl9fY9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784540966473-fe9ljetvmrpmr9a8hcc2kmgnkt0g1ell.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "784540966473-2chc3t3li77b2jrn6c6vg0irojj51sv7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.recepieApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784540966473:android:860e9e75e2e8f8cf572998",
+        "android_client_info": {
+          "package_name": "com.food.recepies"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784540966473-mft1rpi0cpppvmco37di1psqucl77ja3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.food.recepies",
+            "certificate_hash": "b7f17d5ac93b6fe7c38d4f201aabe0a6da1c8fdd"
+          }
+        },
+        {
+          "client_id": "784540966473-sb0tj7c6rorcfjr28gf7d1iib5s2b96p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.food.recepies",
+            "certificate_hash": "bbd8f9ddd8e2ae93bff240f6f04b64097b299dfd"
+          }
+        },
+        {
+          "client_id": "784540966473-suts6jlmgjdck574ssl0o2j9egppsfn7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.food.recepies",
+            "certificate_hash": "494bcb2df287b2f152be102a278050d6dd4386e0"
+          }
+        },
+        {
+          "client_id": "784540966473-fe9ljetvmrpmr9a8hcc2kmgnkt0g1ell.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc4_NIgmOjzEf9udBekP6nh6STZl9fY9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784540966473-fe9ljetvmrpmr9a8hcc2kmgnkt0g1ell.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "784540966473-2chc3t3li77b2jrn6c6vg0irojj51sv7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.recepieApp"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-7563769381318377~3489700515"
+    }
+  ],
+  "configuration_version": "1"
+}

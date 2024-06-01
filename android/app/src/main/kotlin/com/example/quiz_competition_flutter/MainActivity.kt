@@ -1,4 +1,4 @@
-package com.example.quiz_competition_flutter
+package com.biit.quiz_app
 
 import io.flutter.embedding.android.FlutterActivity
 

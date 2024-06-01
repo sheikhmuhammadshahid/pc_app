@@ -86,15 +86,15 @@ class WelcomeScreen extends StatelessWidget {
                       ),
 
                       // const Spacer(), // 1/6
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      Obx(
-                        () {
-                          return getTextInputField(
-                              clients.ipController, 'Enter Ip');
-                        },
-                      ),
+                      // const SizedBox(
+                      //   height: 15,
+                      // ),
+                      // Obx(
+                      //   () {
+                      //     return getTextInputField(
+                      //         clients.ipController, 'Enter Ip');
+                      //   },
+                      // ),
 
                       // const Spacer(), // 1/6
                       const SizedBox(
